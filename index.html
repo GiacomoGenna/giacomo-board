@@ -1010,8 +1010,8 @@ async function ghLoad() {
 
 async function ghSave(data, retry = true) {
   try {
-    // Toujours récupérer le SHA frais avant d'écrire
-    const rGet = await fetch(GH_API);
+    // Toujours récupérer le SHA frais avec token (sans token = SHA en cache incorrect)
+    const rGet = await fetch(GH_API, { headers: { Authorization: `token ${GH_TOKEN}` } });
     if (!rGet.ok) throw new Error('read ' + rGet.status);
     const jGet = await rGet.json();
     ghSha = jGet.sha;
