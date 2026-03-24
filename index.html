@@ -1803,18 +1803,10 @@ function saveToken() {
     else   setSync('error',  'Erreur sync');
   });
 }
-document.getElementById('btnSaveToken').onclick  = saveToken;
-document.getElementById('btnCancelToken').onclick = closeTokenModal;
-document.getElementById('tokenModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeTokenModal();
-});
-document.getElementById('tokenInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') saveToken();
-});
 </script>
 
 <!-- MODAL TOKEN -->
-<div class="modal-overlay" id="tokenModal">
+<div class="modal-overlay" id="tokenModal" onclick="if(event.target===this)closeTokenModal()">
   <div class="modal" style="max-width:460px">
     <h2 style="margin-bottom:8px">🔑 Token GitHub</h2>
     <p style="font-size:13px;color:var(--muted);margin-bottom:20px">
@@ -1825,11 +1817,11 @@ document.getElementById('tokenInput').addEventListener('keydown', e => {
     </p>
     <div class="form-group">
       <label>Token</label>
-      <input type="password" id="tokenInput" placeholder="github_pat_..." />
+      <input type="password" id="tokenInput" placeholder="github_pat_..." onkeydown="if(event.key==='Enter')saveToken()" />
     </div>
     <div class="form-actions">
-      <button class="btn btn-secondary" id="btnCancelToken">Annuler</button>
-      <button class="btn btn-primary"   id="btnSaveToken">Enregistrer</button>
+      <button class="btn btn-secondary" onclick="closeTokenModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveToken()">Enregistrer</button>
     </div>
   </div>
 </div>
