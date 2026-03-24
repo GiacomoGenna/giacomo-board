@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giacomo — Board</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0d14;
+      --s1:       #161622;
+      --s2:       #1e1e2e;
+      --s3:       #26263a;
+      --border:   #2c2c42;
+      --text:     #ddddf0;
+      --muted:    #64648c;
+      --accent:   #7c7cff;
+
+      --elodie:    #c084fc;
+      --nina:      #fb923c;
+      --christian: #38bdf8;
+      --sebastien: #34d399;
+      --business:  #facc15;
+      --pasta:     #f87171;
+    }
+
+    html, body { min-height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--s1);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-title { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -.3px; }
+    .header-date  { font-size: 12px; color: var(--muted); margin-top: 2px; text-transform: capitalize; }
+
+    .header-stats { display: flex; gap: 12px; }
+
+    .stat-pill {
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .stat-pill strong { color: #fff; font-weight: 600; }
+
+    /* ── TABS ── */
+    nav {
+      background: var(--s1);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+    }
+
+    .tab-btn {
+      padding: 11px 18px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .tab-btn.active { color: #fff; border-bottom-color: var(--accent); }
+    .tab-btn:hover:not(.active) { color: var(--text); }
+
+    .tab-badge {
+      background: var(--s3);
+      border-radius: 10px;
+      padding: 1px 7px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .tab-btn.active .tab-badge { background: rgba(124,124,255,.2); color: var(--accent); }
+
+    /* ── MAIN ── */
+    main { padding: 28px 32px; max-width: 1300px; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .section-label span { font-size: 11px; font-weight: 400; }
+
+    /* ── TASK CARD ── */
+    .task-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 32px; }
+
+    .task {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-left: 3px solid transparent;
+      border-radius: 9px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      cursor: pointer;
+      transition: background .15s, opacity .2s;
+      user-select: none;
+    }
+    .task:hover { background: var(--s2); }
+    .task.done { opacity: .35; }
+    .task.done .task-text { text-decoration: line-through; color: var(--muted); }
+
+    .task[data-client="elodie"]    { border-left-color: var(--elodie); }
+    .task[data-client="nina"]      { border-left-color: var(--nina); }
+    .task[data-client="christian"] { border-left-color: var(--christian); }
+    .task[data-client="sebastien"] { border-left-color: var(--sebastien); }
+    .task[data-client="business"]  { border-left-color: var(--business); }
+    .task[data-client="pasta"]     { border-left-color: var(--pasta); }
+
+    /* Checkbox */
+    .cb {
+      width: 18px; height: 18px;
+      border: 2px solid var(--border);
+      border-radius: 5px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .15s;
+    }
+    .priority-1 .cb { border-color: #f87171; }
+    .priority-2 .cb { border-color: #fb923c; }
+
+    .task.done .cb { background: var(--muted); border-color: var(--muted); }
+    .task.done .cb::after { content: '✓'; font-size: 10px; color: var(--bg); font-weight: 800; }
+
+    .task-body { flex: 1; min-width: 0; }
+
+    .task-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--s3);
+      color: var(--muted);
+    }
+    .badge[data-client="elodie"]    { background: rgba(192,132,252,.15); color: var(--elodie); }
+    .badge[data-client="nina"]      { background: rgba(251,146,60,.15);  color: var(--nina); }
+    .badge[data-client="christian"] { background: rgba(56,189,248,.15);  color: var(--christian); }
+    .badge[data-client="sebastien"] { background: rgba(52,211,153,.15);  color: var(--sebastien); }
+    .badge[data-client="business"]  { background: rgba(250,204,21,.15);  color: var(--business); }
+    .badge[data-client="pasta"]     { background: rgba(248,113,113,.15); color: var(--pasta); }
+    .badge.b-urgent     { background: rgba(248,113,113,.2);  color: #f87171; }
+    .badge.b-validation { background: rgba(251,146,60,.15);  color: #fb923c; }
+    .badge.b-post       { background: rgba(52,211,153,.15);  color: #34d399; }
+
+    .task-text { font-size: 14px; color: var(--text); }
+    .task-deadline { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .task-deadline.overdue { color: #f87171; font-weight: 600; }
+
+    /* Action icon button */
+    .task-action {
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; padding: 2px 5px; border-radius: 4px;
+      font-size: 15px; line-height: 1; opacity: 0;
+      transition: opacity .15s, color .15s;
+      flex-shrink: 0;
+    }
+    .task:hover .task-action { opacity: 1; }
+    .task-action:hover { color: var(--accent); }
+    .task-action.del:hover { color: #f87171; }
+
+    /* ── LEGEND ── */
+    .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── WEEK GRID ── */
+    .week-wrapper { overflow-x: auto; margin-bottom: 24px; }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(140px, 1fr));
+      gap: 10px;
+      min-width: 980px;
+    }
+
+    .day-col {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .day-col.today { border-color: var(--accent); }
+
+    .day-head {
+      padding: 10px 12px;
+      background: var(--s2);
+      border-bottom: 1px solid var(--border);
+    }
+    .day-name { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
+    .day-col.today .day-name { color: var(--accent); }
+    .day-num { font-size: 20px; font-weight: 800; color: #fff; }
+
+    .day-tasks { padding: 8px; }
+
+    .chip {
+      font-size: 11px;
+      padding: 5px 8px;
+      margin-bottom: 4px;
+      border-radius: 5px;
+      background: var(--s3);
+      color: var(--text);
+      border-left: 2px solid transparent;
+      line-height: 1.4;
+      transition: opacity .2s;
+    }
+    .chip.done { opacity: .3; text-decoration: line-through; }
+    .chip[data-client="elodie"]    { border-left-color: var(--elodie); }
+    .chip[data-client="nina"]      { border-left-color: var(--nina); }
+    .chip[data-client="christian"] { border-left-color: var(--christian); }
+    .chip[data-client="sebastien"] { border-left-color: var(--sebastien); }
+    .chip[data-client="business"]  { border-left-color: var(--business); }
+    .chip[data-client="pasta"]     { border-left-color: var(--pasta); }
+
+    /* ── ADD BUTTON ── */
+    .add-btn {
+      width: 100%;
+      background: var(--s2);
+      border: 1px dashed var(--border);
+      border-radius: 9px;
+      padding: 10px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: left;
+      cursor: pointer;
+      transition: all .15s;
+      margin-bottom: 10px;
+    }
+    .add-btn:hover { background: var(--s3); color: var(--text); border-color: var(--muted); }
+
+    /* ── PROJECTS ── */
+    .project-card {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 10px;
+    }
+
+    .proj-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .proj-title { font-size: 15px; font-weight: 700; color: #fff; }
+    .proj-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .proj-desc { font-size: 12px; color: var(--muted); margin-top: 5px; }
+
+    .progress-bar {
+      height: 4px; background: var(--s3); border-radius: 2px; margin: 12px 0;
+    }
+    .progress-fill { height: 100%; border-radius: 2px; transition: width .4s; }
+
+    .step-list { list-style: none; margin-top: 10px; }
+    .step {
+      display: flex; align-items: center; gap: 9px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px; cursor: pointer;
+      transition: opacity .15s;
+    }
+    .step:last-child { border-bottom: none; }
+    .step.done { opacity: .4; text-decoration: line-through; }
+
+    .step-cb {
+      width: 15px; height: 15px;
+      border: 2px solid var(--border);
+      border-radius: 4px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step.done .step-cb { background: var(--muted); border-color: var(--muted); }
+    .step.done .step-cb::after { content: '✓'; font-size: 9px; color: var(--bg); font-weight: 800; }
+
+    /* ── MODAL ── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .overlay.open { display: flex; }
+
+    .modal {
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      width: 480px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal h2 { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 22px; }
+
+    .form-row { margin-bottom: 16px; }
+    .form-row label {
+      display: block;
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .5px;
+      color: var(--muted); margin-bottom: 6px;
+    }
+    .form-row input, .form-row select, .form-row textarea {
+      width: 100%;
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .15s;
+      resize: vertical;
+    }
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--accent); }
+    .form-row select option { background: var(--s2); }
+
+    .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+
+    .btn { padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; }
+    .btn-primary  { background: var(--accent); color: #fff; }
+    .btn-primary:hover  { background: #6a6aef; }
+    .btn-secondary { background: var(--s3); color: var(--text); }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-danger { background: rgba(248,113,113,.15); color: #f87171; margin-right: auto; }
+    .btn-danger:hover { background: rgba(248,113,113,.25); }
+
+    /* ── EMPTY ── */
+    .empty { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 13px; }
+
+    /* ── TODAY TWO COL ── */
+    .today-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 800px) {
+      .today-two-col { grid-template-columns: 1fr; }
+    }
+
+    /* ── TODAY OVERVIEW ── */
+    .today-overview {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 8px;
+    }
+
+    .overview-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-left: 3px solid transparent;
+      margin-bottom: 5px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .overview-row:hover { background: var(--s2); }
+    .overview-row.done-row { opacity: .4; text-decoration: line-through; }
+    .overview-row[data-client="elodie"]    { border-left-color: var(--elodie); }
+    .overview-row[data-client="nina"]      { border-left-color: var(--nina); }
+    .overview-row[data-client="christian"] { border-left-color: var(--christian); }
+    .overview-row[data-client="sebastien"] { border-left-color: var(--sebastien); }
+    .overview-row[data-client="business"]  { border-left-color: var(--business); }
+    .overview-row[data-client="pasta"]     { border-left-color: var(--pasta); }
+
+    .overview-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    .overview-pct {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    /* ── CLIENTS GRID ── */
+    .clients-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .client-card {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .client-card-header {
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .client-card-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .client-color-bar {
+      width: 4px;
+      height: 22px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .client-card-body {
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .client-card-footer {
+      padding: 10px 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ── OVERDUE RECURRING ── */
+    .task.task-overdue {
+      border-left-color: #f87171 !important;
+      background: rgba(248,113,113,.04) !important;
+    }
+    .task.task-overdue:hover { background: rgba(248,113,113,.08) !important; }
+    .badge.b-overdue { background: rgba(248,113,113,.2); color: #f87171; }
+
+    /* ── STAT LINK ── */
+    .stat-link {
+      color: var(--muted);
+      font-size: 11px;
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 3px;
+      transition: color .15s;
+    }
+    .stat-link:hover { color: var(--text); }
+
+    /* ── TAB FILTER BAR ── */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 12px;
+    }
+    .filter-select {
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 12px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+    .filter-select:focus { border-color: var(--accent); }
+    .filter-select option { background: var(--s2); }
+
+    /* ── MINI ADD BTN ── */
+    .mini-add-btn {
+      background: none; border: 1px solid var(--border); border-radius: 6px;
+      padding: 2px 9px; color: var(--muted); font-size: 11px; cursor: pointer;
+      transition: all .15s;
+    }
+    .mini-add-btn:hover { background: var(--s2); color: var(--text); }
+
+    /* ── ALTERNATING FIELD ── */
+    .alt-fields { display: none; }
+    .alt-fields.visible { display: block; }
+
+    /* ── RESPONSIVE ── */
+    .sync-pill {
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .sync-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: background .3s;
+    }
+    .sync-dot.saving  { background: #facc15; animation: pulse 1s infinite; }
+    .sync-dot.synced  { background: #34d399; }
+    .sync-dot.error   { background: #f87171; }
+    .sync-dot.offline { background: var(--muted); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    @media (max-width: 700px) {
+      header, nav, main { padding-left: 16px; padding-right: 16px; }
+      .header-stats { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div>
+    <div class="header-title">Giacomo — Board</div>
+    <div class="header-date" id="hDate"></div>
+  </div>
+  <div class="header-stats" style="display:flex;align-items:center;gap:12px;">
+    <div class="stat-pill">Aujourd'hui : <strong id="sTodayLeft">0</strong> restantes</div>
+    <div class="stat-pill"><strong id="sDone">0</strong> complétées</div>
+    <div class="sync-pill" onclick="openTokenModal()" style="cursor:pointer" title="Configurer la synchronisation">
+      <div class="sync-dot offline" id="syncDot"></div>
+      <span id="syncLabel">Connexion…</span>
+    </div>
+  </div>
+</header>
+
+<!-- TABS -->
+<nav>
+  <button class="tab-btn active" data-tab="today">
+    Aujourd'hui <span class="tab-badge" id="tBadgeToday">0</span>
+  </button>
+  <button class="tab-btn" data-tab="week">Semaine</button>
+  <button class="tab-btn" data-tab="recurring">Récurrentes</button>
+  <button class="tab-btn" data-tab="ponctual">
+    Tâches ponctuelles <span class="tab-badge" id="tBadgePonct">0</span>
+  </button>
+  <button class="tab-btn" data-tab="projects">Projets long terme <span class="tab-badge" id="tBadgeProj">0</span></button>
+  <button class="tab-btn" data-tab="clients">Clients <span class="tab-badge" id="tBadgeClients">0</span></button>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+  <!-- TODAY -->
+  <div class="tab-panel active" id="tab-today">
+    <div class="today-two-col">
+      <div>
+        <div id="prioritySection" style="display:none">
+          <div class="section-label" style="color:#f87171;margin-bottom:10px">
+            🚨 À traiter en priorité
+          </div>
+          <div class="task-list" id="listPriority"></div>
+        </div>
+        <div class="section-label">
+          Récurrentes du jour
+          <span style="display:flex;gap:10px;align-items:center">
+            <span id="progToday"></span>
+            <button class="mini-add-btn" onclick="openRecurModal(null,event)">＋ Ajouter</button>
+          </span>
+        </div>
+        <div class="task-list" id="listToday"></div>
+      </div>
+      <div>
+        <div class="section-label" id="tomorrowLabel">Demain</div>
+        <div class="task-list" id="listTomorrow"></div>
+      </div>
+    </div>
+
+    <div class="today-overview">
+      <div class="overview-col">
+        <div class="section-label">Tâches ponctuelles actives</div>
+        <div id="overviewPonct"></div>
+      </div>
+      <div class="overview-col">
+        <div class="section-label">Projets long terme</div>
+        <div id="overviewProj"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK -->
+  <div class="tab-panel" id="tab-week">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="legend" id="legend2" style="margin-bottom:0"></div>
+      <button class="add-btn" style="width:auto;margin-bottom:0;flex-shrink:0" onclick="openRecurModal(null,event)">＋ Ajouter une tâche récurrente</button>
+    </div>
+    <div class="week-wrapper">
+      <div class="week-grid" id="weekGrid"></div>
+    </div>
+  </div>
+
+  <!-- RECURRING -->
+  <div class="tab-panel" id="tab-recurring">
+    <div class="filter-bar">
+      <select class="filter-select" id="filterRecurClient" onchange="renderRecurring()">
+        <option value="">Tous les clients</option>
+      </select>
+      <button class="add-btn" style="width:auto;margin-bottom:0" onclick="openRecurModal(null,event)">＋ Ajouter une tâche récurrente</button>
+    </div>
+    <div id="listRecurring"></div>
+  </div>
+
+  <!-- PONCTUAL -->
+  <div class="tab-panel" id="tab-ponctual">
+    <div class="filter-bar">
+      <select class="filter-select" id="filterPonctClient" onchange="renderPonctual()">
+        <option value="">Tous les clients</option>
+      </select>
+      <button class="add-btn" style="width:auto;margin-bottom:0" id="btnAddPonct">＋ Ajouter une tâche ponctuelle</button>
+    </div>
+    <div class="task-list" id="listPonct"></div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="tab-panel" id="tab-projects">
+    <div class="filter-bar">
+      <select class="filter-select" id="filterProjClient" onchange="renderProjects()">
+        <option value="">Tous les clients</option>
+      </select>
+      <button class="add-btn" style="width:auto;margin-bottom:0" id="btnAddProj">＋ Ajouter un projet</button>
+    </div>
+    <div id="listProj"></div>
+  </div>
+
+  <!-- CLIENTS -->
+  <div class="tab-panel" id="tab-clients">
+    <button class="add-btn" id="btnAddClient">＋ Ajouter un client</button>
+    <div class="clients-grid" id="listClients"></div>
+  </div>
+
+</main>
+
+<!-- MODAL: Ponctual -->
+<div class="overlay" id="mPonct">
+  <div class="modal">
+    <h2 id="mPonctTitle">Nouvelle tâche ponctuelle</h2>
+    <div class="form-row">
+      <label>Description</label>
+      <input id="fPText" type="text" placeholder="Que dois-tu faire ?" />
+    </div>
+    <div class="form-row">
+      <label>Client / Catégorie</label>
+      <select id="fPClient">
+        <option value="elodie">Élodie Scullino</option>
+        <option value="nina">Nina Voit</option>
+        <option value="christian">Christian Wipfli</option>
+        <option value="sebastien">Sébastien Buonomo</option>
+        <option value="business" selected>Business (perso)</option>
+        <option value="pasta">Pasta</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Deadline</label>
+      <input id="fPDate" type="date" />
+    </div>
+    <div class="form-row">
+      <label>Priorité</label>
+      <select id="fPPrio">
+        <option value="1">🔴 Urgent</option>
+        <option value="2" selected>🟡 Normal</option>
+        <option value="3">🟢 Flexible</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-danger" id="btnDelPonct" style="display:none">Supprimer</button>
+      <button class="btn btn-secondary" id="btnCancelPonct">Annuler</button>
+      <button class="btn btn-primary" id="btnSavePonct">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Project -->
+<div class="overlay" id="mProj">
+  <div class="modal">
+    <h2 id="mProjTitle">Nouveau projet</h2>
+    <div class="form-row">
+      <label>Nom du projet</label>
+      <input id="fJName" type="text" placeholder="Ex: Funnel Nina — Lancement" />
+    </div>
+    <div class="form-row">
+      <label>Client / Catégorie</label>
+      <select id="fJClient">
+        <option value="elodie">Élodie Scullino</option>
+        <option value="nina" selected>Nina Voit</option>
+        <option value="christian">Christian Wipfli</option>
+        <option value="sebastien">Sébastien Buonomo</option>
+        <option value="business">Business (perso)</option>
+        <option value="pasta">Pasta</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Description courte</label>
+      <textarea id="fJDesc" rows="2" placeholder="Contexte du projet…"></textarea>
+    </div>
+    <div class="form-row">
+      <label>Deadline globale</label>
+      <input id="fJDate" type="date" />
+    </div>
+    <div class="form-row">
+      <label>Étapes (une par ligne)</label>
+      <textarea id="fJSteps" rows="5" placeholder="Écrire la page de vente&#10;Créer la séquence emails&#10;Rédiger le lancement&#10;…"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-danger" id="btnDelProj" style="display:none">Supprimer</button>
+      <button class="btn btn-secondary" id="btnCancelProj">Annuler</button>
+      <button class="btn btn-primary" id="btnSaveProj">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Client -->
+<div class="overlay" id="mClient">
+  <div class="modal">
+    <h2 id="mClientTitle">Nouveau client</h2>
+    <div class="form-row">
+      <label>Nom du client</label>
+      <input id="fCName" type="text" placeholder="Ex: Marie Dupont" />
+    </div>
+    <div class="form-row">
+      <label>Couleur</label>
+      <div style="display:flex;gap:10px;align-items:center">
+        <input id="fCColor" type="color" value="#7c7cff" style="width:48px;height:38px;border-radius:8px;border:1px solid var(--border);background:none;cursor:pointer;padding:2px" />
+        <span style="font-size:12px;color:var(--muted)">Couleur d'identification dans l'app</span>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Travail effectué</label>
+      <textarea id="fCWork" rows="4" placeholder="Décris le travail que tu fais pour ce client : fréquence, type de contenu, workflow de validation…"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-danger" id="btnDelClient" style="display:none">Supprimer</button>
+      <button class="btn btn-secondary" id="btnCancelClient">Annuler</button>
+      <button class="btn btn-primary" id="btnSaveClient">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Recurring Task -->
+<div class="overlay" id="mRecur">
+  <div class="modal">
+    <h2 id="mRecurTitle">Nouvelle tâche récurrente</h2>
+    <div class="form-row">
+      <label>Description</label>
+      <input id="fRText" type="text" placeholder="Ex: Envoyer email Nina (mercredi)" />
+    </div>
+    <div class="form-row">
+      <label>Client</label>
+      <select id="fRClient">
+        <option value="elodie">Élodie Scullino</option>
+        <option value="nina">Nina Voit</option>
+        <option value="christian">Christian Wipfli</option>
+        <option value="sebastien">Sébastien Buonomo</option>
+        <option value="business">Business (perso)</option>
+        <option value="pasta">Pasta</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Jour de la semaine</label>
+      <select id="fRDay">
+        <option value="1">Lundi</option>
+        <option value="2">Mardi</option>
+        <option value="3">Mercredi</option>
+        <option value="4">Jeudi</option>
+        <option value="5">Vendredi</option>
+        <option value="6">Samedi</option>
+        <option value="0">Dimanche</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Type</label>
+      <select id="fRBadge">
+        <option value="email">Email</option>
+        <option value="linkedin">LinkedIn</option>
+        <option value="validation">Validation</option>
+        <option value="write">À rédiger</option>
+        <option value="post">À poster</option>
+        <option value="urgent">🚨 Urgent</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Priorité</label>
+      <select id="fRPrio">
+        <option value="1">🔴 Haute</option>
+        <option value="2" selected>🟡 Normale</option>
+        <option value="3">🟢 Basse</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:13px;font-weight:500">
+        <input type="checkbox" id="fRAlternating" onchange="toggleAltFields()" style="width:auto" />
+        Tâche alternante (1 semaine sur 2)
+      </label>
+    </div>
+    <div class="alt-fields" id="altFields">
+      <div class="form-row">
+        <label>Texte alternatif (semaine paire)</label>
+        <input id="fRTextAlt" type="text" placeholder="Ex: Email Nina — 🎓 Conseil de coach (lundi)" />
+      </div>
+      <div class="form-row">
+        <label>Date de référence (semaine "paire")</label>
+        <input id="fRAltBase" type="date" />
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-danger" id="btnDelRecur" style="display:none">Supprimer</button>
+      <button class="btn btn-secondary" id="btnCancelRecur">Annuler</button>
+      <button class="btn btn-primary" id="btnSaveRecur">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════
+
+const DEFAULT_CLIENTS = [
+  { id:'elodie',    name:'Élodie Scullino',   color:'#c084fc',
+    work:"1 email/semaine. Envoi automatique vendredi à 7h15. Validation requise au plus tard le jeudi. Je rédige et mets l'email dans son logiciel." },
+  { id:'nina',      name:'Nina Voit',          color:'#fb923c',
+    work:"4 emails/semaine (lun, mer, ven, sam) + 2 posts LinkedIn + 1 email PRO. Pas de validation requise — je gère tout (rédaction, mise en ligne, envoi). Projets long terme : funnel, lancement, page de vente. Je suis son copy chief." },
+  { id:'christian', name:'Christian Wipfli',   color:'#38bdf8',
+    work:"2 posts LinkedIn/semaine (lundi & jeudi). Il poste lui-même. Je dois lui envoyer le post au moins 1 jour avant la publication. Idéalement avec une image associée." },
+  { id:'sebastien', name:'Sébastien Buonomo',  color:'#34d399',
+    work:"2 posts LinkedIn/semaine (mardi & jeudi). Il poste lui-même. Je dois lui envoyer le post au moins 1 jour avant la publication. Idéalement avec une image associée." },
+  { id:'business',  name:'Business',           color:'#facc15',
+    work:"Facturation, posts LinkedIn perso, gestion administrative et développement business." },
+  { id:'pasta',     name:'Pasta',              color:'#f87171',
+    work:"Side business Pasta." },
+];
+
+let CLIENTS = {}; // map id → client, rebuilt from S.clients
+
+function rebuildClientsMap() {
+  CLIENTS = {};
+  S.clients.forEach(c => CLIENTS[c.id] = c);
+}
+
+function populateClientSelects() {
+  const opts    = S.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  const allOpts = '<option value="">Tous les clients</option>' + opts;
+  // Form selects (sans "tous")
+  ['fPClient','fJClient','fRClient'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const cur = el.value;
+    el.innerHTML = opts;
+    if ([...el.options].some(o => o.value === cur)) el.value = cur;
+  });
+  // Filter selects (avec "tous")
+  ['filterRecurClient','filterPonctClient','filterProjClient'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const cur = el.value;
+    el.innerHTML = allOpts;
+    if ([...el.options].some(o => o.value === cur)) el.value = cur;
+  });
+}
+
+const BADGE = {
+  urgent:     { label: '🚨 URGENT',    cls: 'b-urgent' },
+  validation: { label: 'Validation',   cls: 'b-validation' },
+  post:       { label: 'À poster',     cls: 'b-post' },
+  email:      { label: 'Email',        cls: '' },
+  linkedin:   { label: 'LinkedIn',     cls: '' },
+  write:      { label: 'À rédiger',    cls: '' },
+};
+
+const DAY_SHORT = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+const DAY_FULL  = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const MONTHS    = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+
+// day: 0=Dim 1=Lun 2=Mar 3=Mer 4=Jeu 5=Ven 6=Sam
+// alternating: affiche textAlt 1 semaine sur 2 depuis altBase
+const DEFAULT_RECURRING = [
+  { id:'r-chr-lun-val',  day:0, client:'christian', priority:1, badge:'validation',
+    text:'Envoyer post LinkedIn LUNDI à Christian (il poste lui-même)' },
+  { id:'r-seb-mar-wrt0', day:0, client:'sebastien', priority:2, badge:'write',
+    text:'Rédiger post LinkedIn MARDI pour Sébastien' },
+  { id:'r-seb-mar-val',  day:1, client:'sebastien', priority:1, badge:'validation',
+    text:'Envoyer post LinkedIn MARDI à Sébastien (il poste lui-même)' },
+  { id:'r-nin-mon-email',day:1, client:'nina',      priority:2, badge:'email',
+    text:'Rédiger & envoyer email Nina (lundi)',
+    textAlt:'Rédiger & envoyer email Nina — 🎓 Conseil de coach (lundi)',
+    alternating:true, altBase:'2026-03-23' },
+  { id:'r-nin-li1',      day:1, client:'nina',      priority:2, badge:'linkedin',
+    text:'Rédiger & poster LinkedIn Nina #1' },
+  { id:'r-nin-pro',      day:2, client:'nina',      priority:2, badge:'email',
+    text:'Rédiger & envoyer email PRO Nina' },
+  { id:'r-chr-jeu-wrt',  day:2, client:'christian', priority:3, badge:'write',
+    text:'Commencer post LinkedIn JEUDI pour Christian' },
+  { id:'r-seb-jeu-wrt',  day:2, client:'sebastien', priority:3, badge:'write',
+    text:'Commencer post LinkedIn JEUDI pour Sébastien' },
+  { id:'r-chr-jeu-val',  day:3, client:'christian', priority:1, badge:'validation',
+    text:'Envoyer post LinkedIn JEUDI à Christian (il poste lui-même)' },
+  { id:'r-seb-jeu-val',  day:3, client:'sebastien', priority:1, badge:'validation',
+    text:'Envoyer post LinkedIn JEUDI à Sébastien (il poste lui-même)' },
+  { id:'r-elo-wrt',      day:3, client:'elodie',    priority:2, badge:'write',
+    text:"Rédiger l'email de la semaine pour Élodie" },
+  { id:'r-nin-wed-email',day:3, client:'nina',      priority:2, badge:'email',
+    text:'Rédiger & envoyer email Nina (mercredi)' },
+  { id:'r-nin-li2',      day:3, client:'nina',      priority:2, badge:'linkedin',
+    text:'Rédiger & poster LinkedIn Nina #2' },
+  { id:'r-elo-val',      day:4, client:'elodie',    priority:1, badge:'validation',
+    text:'Envoyer email à Élodie pour validation — deadline avant vendredi' },
+  { id:'r-elo-log',      day:5, client:'elodie',    priority:1, badge:'urgent',
+    text:"🚨 Mettre l'email Élodie dans son logiciel — envoi automatique à 7h15" },
+  { id:'r-nin-fri-email',day:5, client:'nina',      priority:2, badge:'email',
+    text:'Rédiger & envoyer email Nina (vendredi)' },
+  { id:'r-chr-lun-wrt',  day:5, client:'christian', priority:2, badge:'write',
+    text:'Commencer post LinkedIn LUNDI pour Christian (à envoyer dimanche)' },
+  { id:'r-seb-mar-wrt5', day:5, client:'sebastien', priority:2, badge:'write',
+    text:'Commencer post LinkedIn MARDI pour Sébastien (à envoyer lundi)' },
+  { id:'r-nin-sat-email',day:6, client:'nina',      priority:1, badge:'email',
+    text:'Rédiger & envoyer email Nina — 📹 Vidéo YouTube (samedi)' },
+  { id:'r-chr-lun-fin',  day:6, client:'christian', priority:2, badge:'validation',
+    text:'Finaliser post lundi Christian — à envoyer demain (dimanche)' },
+  { id:'r-seb-mar-fin',  day:6, client:'sebastien', priority:3, badge:'write',
+    text:'Finaliser post mardi Sébastien — à envoyer lundi' },
+];
+
+// ═══════════════════════════════════
+// GITHUB SYNC
+// ═══════════════════════════════════
+
+let GH_TOKEN   = localStorage.getItem('gc_gh_token') || '';
+const GH_API   = 'https://api.github.com/repos/GiacomoGenna/giacomo-board/contents/data.json';
+
+let ghSha     = null;
+let saveTimer = null;
+
+function setSync(status, label) {
+  const dot = document.getElementById('syncDot');
+  const lbl = document.getElementById('syncLabel');
+  if (dot) { dot.className = 'sync-dot ' + status; }
+  if (lbl) { lbl.textContent = label; }
+}
+
+async function ghLoad() {
+  try {
+    // Lecture sans token (repo public)
+    const r = await fetch(GH_API);
+    if (!r.ok) throw new Error(r.status);
+    const j = await r.json();
+    ghSha = j.sha;
+    // Décodage UTF-8 propre (accents, caractères spéciaux)
+    const binary = atob(j.content.replace(/\n/g, ''));
+    const bytes  = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return JSON.parse(new TextDecoder('utf-8').decode(bytes));
+  } catch(e) { return null; }
+}
+
+async function ghSave(data) {
+  try {
+    if (!ghSha) {
+      const r = await fetch(GH_API, { headers: { Authorization: `token ${GH_TOKEN}` } });
+      const j = await r.json();
+      ghSha = j.sha;
+    }
+    // Encodage UTF-8 propre (accents, caractères spéciaux)
+    const json    = JSON.stringify(data, null, 2);
+    const encoded = new TextEncoder().encode(json);
+    const binary  = String.fromCharCode(...encoded);
+    const content = btoa(binary);
+    const r = await fetch(GH_API, {
+      method: 'PUT',
+      headers: { Authorization: `token ${GH_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'Update board data', content, sha: ghSha })
+    });
+    if (!r.ok) throw new Error(r.status);
+    const j = await r.json();
+    ghSha = j.content.sha;
+    return true;
+  } catch(e) { return false; }
+}
+
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+
+function loadLS() {
+  return {
+    done:      JSON.parse(localStorage.getItem('gc_done')    || '{}'),
+    ponctual:  JSON.parse(localStorage.getItem('gc_ponct')   || '[]'),
+    projects:  JSON.parse(localStorage.getItem('gc_proj')    || '[]'),
+    recurring: JSON.parse(localStorage.getItem('gc_recur')   || 'null'),
+    clients:   JSON.parse(localStorage.getItem('gc_clients') || 'null'),
+  };
+}
+
+function cacheLS() {
+  localStorage.setItem('gc_done',    JSON.stringify(S.done));
+  localStorage.setItem('gc_ponct',   JSON.stringify(S.ponctual));
+  localStorage.setItem('gc_proj',    JSON.stringify(S.projects));
+  localStorage.setItem('gc_recur',   JSON.stringify(S.recurring));
+  localStorage.setItem('gc_clients', JSON.stringify(S.clients));
+}
+
+function save() {
+  cacheLS();
+  setSync('saving', 'Sync…');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    const ok = await ghSave(S);
+    setSync(ok ? 'synced' : 'error', ok ? 'Synchronisé' : 'Erreur sync');
+  }, 1500);
+}
+
+let S = loadLS();
+if (!S.recurring) S.recurring = DEFAULT_RECURRING.map(t => ({...t}));
+if (!S.clients)   S.clients   = DEFAULT_CLIENTS.map(c => ({...c}));
+rebuildClientsMap();
+
+// Seed default projects on first load
+if (!S.projects.length) {
+  S.projects = [
+    {
+      id:'proj-nina-funnel', client:'nina',
+      name:'Funnel complet — Nina Voit',
+      desc:"Lancement, page de vente, séquence d'emails",
+      deadline:'',
+      steps:[
+        {text:'Écrire la page de vente',              done:false},
+        {text:"Créer la séquence d'emails (funnel)",   done:false},
+        {text:'Rédiger la séquence de lancement',     done:false},
+        {text:'Emails post-achat',                    done:false},
+        {text:'Révisions & relecture finale',         done:false},
+      ],
+    },
+    {
+      id:'proj-pasta', client:'pasta',
+      name:'Side business — Pasta',
+      desc:'', deadline:'', steps:[],
+    },
+  ];
+  save();
+}
+
+// ═══════════════════════════════════
+// UTILS
+// ═══════════════════════════════════
+
+const TODAY = new Date();
+
+function ds(d) {
+  // Local date string YYYY-MM-DD
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function key(taskId, date) { return `${taskId}__${ds(date)}`; }
+
+function isDone(taskId, date) { return !!S.done[key(taskId, date)]; }
+
+function toggle(taskId, date) {
+  const k = key(taskId, date);
+  if (S.done[k]) delete S.done[k]; else S.done[k] = true;
+  save();
+}
+
+function weekDates(ref) {
+  const d = new Date(ref);
+  const day = d.getDay();
+  const diffMon = day === 0 ? -6 : 1 - day;
+  const mon = new Date(d);
+  mon.setDate(d.getDate() + diffMon);
+  return Array.from({length:7}, (_,i) => { const x=new Date(mon); x.setDate(mon.getDate()+i); return x; });
+}
+
+function todayMidnight() {
+  return new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+}
+
+function getTaskText(t, date) {
+  if (t.alternating && t.altBase) {
+    const base  = new Date(t.altBase + 'T00:00:00');
+    const weeks = Math.round((date - base) / (7 * 24 * 3600 * 1000));
+    return weeks % 2 === 0 ? (t.textAlt || t.text) : t.text;
+  }
+  return t.text;
+}
+
+// ═══════════════════════════════════
+// HTML BUILDERS
+// ═══════════════════════════════════
+
+function legend(id) {
+  document.getElementById(id).innerHTML = Object.entries(CLIENTS).map(([k,c]) =>
+    `<div class="legend-item"><div class="legend-dot" style="background:${c.color}"></div><span>${c.name}</span></div>`
+  ).join('');
+}
+
+function badgeHTML(b) {
+  const def = BADGE[b] || {label:b, cls:''};
+  return `<span class="badge ${def.cls}">${def.label}</span>`;
+}
+
+function recurringCard(t, date, overdue = false) {
+  const done = isDone(t.id, date);
+  const text = getTaskText(t, date);
+  const overdueTag = overdue
+    ? `<span class="badge b-overdue">⏰ ${DAY_FULL[date.getDay()]} ${date.getDate()} ${MONTHS[date.getMonth()]}</span>`
+    : '';
+  return `
+  <div class="task priority-${t.priority} ${done?'done':''} ${overdue?'task-overdue':''}"
+       data-client="${t.client}"
+       data-task-id="${t.id}" data-date="${ds(date)}"
+       onclick="onRecurringClick(this)">
+    <div class="cb"></div>
+    <div class="task-body">
+      <div class="task-meta">
+        <span class="badge" data-client="${t.client}">${CLIENTS[t.client].name}</span>
+        ${badgeHTML(t.badge)}
+        ${overdueTag}
+      </div>
+      <div class="task-text">${text}</div>
+    </div>
+    <button class="task-action" onclick="openRecurModal('${t.id}',event)" title="Modifier">✎</button>
+  </div>`;
+}
+
+function ponctualCard(t) {
+  const done = !!t.done;
+  const tm = todayMidnight();
+  const dl = t.deadline ? new Date(t.deadline+'T00:00:00') : null;
+  const overdue = dl && !done && dl < tm;
+  const prioLabel = t.priority==1 ? '🔴 Urgent' : t.priority==2 ? '🟡 Normal' : '🟢 Flexible';
+  const dlStr = dl ? dl.toLocaleDateString('fr-FR',{day:'numeric',month:'long'}) : '';
+
+  return `
+  <div class="task ${done?'done':''}" data-client="${t.client}"
+       onclick="onPonctToggle('${t.id}')">
+    <div class="cb"></div>
+    <div class="task-body">
+      <div class="task-meta">
+        <span class="badge" data-client="${t.client}">${CLIENTS[t.client].name}</span>
+        <span class="badge">${prioLabel}</span>
+      </div>
+      <div class="task-text">${t.text}</div>
+      ${dl ? `<div class="task-deadline ${overdue?'overdue':''}">📅 ${dlStr}${overdue?' — EN RETARD':''}</div>` : ''}
+    </div>
+    <button class="task-action" onclick="onPonctEdit('${t.id}',event)" title="Modifier">✎</button>
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// RENDER
+// ═══════════════════════════════════
+
+function projectAlertCard(p) {
+  const clr = CLIENTS[p.client]?.color || '#888';
+  const dl  = new Date(p.deadline+'T00:00:00');
+  const dlStr = dl.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  const total = p.steps.length, done = p.steps.filter(s=>s.done).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  return `
+  <div class="task task-overdue" data-client="${p.client}" onclick="switchTab('projects','${p.client}')" style="cursor:pointer">
+    <div class="cb" style="border-color:#f87171"></div>
+    <div class="task-body">
+      <div class="task-meta">
+        <span class="badge" data-client="${p.client}">${CLIENTS[p.client]?.name||p.client}</span>
+        <span class="badge b-overdue">⏰ Deadline dépassée</span>
+      </div>
+      <div class="task-text">${p.name}</div>
+      <div class="task-deadline overdue">📅 ${dlStr}${total?` — ${pct}% complété`:''}</div>
+    </div>
+  </div>`;
+}
+
+function renderToday() {
+  const tm    = todayMidnight();
+  const tmEnd = new Date(tm); tmEnd.setDate(tmEnd.getDate()+1);
+
+  // 1. Récurrentes en retard (7 derniers jours)
+  const priorityHTML = [];
+  for (let i = 1; i <= 7; i++) {
+    const d = new Date(TODAY); d.setDate(TODAY.getDate() - i);
+    S.recurring
+      .filter(t => t.day === d.getDay() && !isDone(t.id, d))
+      .sort((a,b) => a.priority - b.priority)
+      .forEach(t => priorityHTML.push({ order: i * 10 + t.priority, html: recurringCard(t, new Date(d), true) }));
+  }
+
+  // 2. Ponctuelles urgentes / en retard
+  S.ponctual
+    .filter(t => { if(t.done||!t.deadline) return false; const dl=new Date(t.deadline+'T00:00:00'); return dl<tmEnd; })
+    .sort((a,b) => a.priority-b.priority)
+    .forEach(t => {
+      const dl = new Date(t.deadline+'T00:00:00');
+      const daysLate = Math.floor((tm - dl) / 86400000);
+      priorityHTML.push({ order: daysLate > 0 ? daysLate * 10 + t.priority : t.priority, html: ponctualCard(t) });
+    });
+
+  // 3. Projets long terme avec deadline dépassée (non terminés)
+  S.projects
+    .filter(p => {
+      if (!p.deadline) return false;
+      const dl = new Date(p.deadline+'T00:00:00');
+      if (dl >= tmEnd) return false;
+      const done = p.steps.filter(s=>s.done).length;
+      return done < p.steps.length || p.steps.length === 0;
+    })
+    .forEach(p => {
+      const dl = new Date(p.deadline+'T00:00:00');
+      const daysLate = Math.floor((tm - dl) / 86400000);
+      priorityHTML.push({ order: daysLate * 10, html: projectAlertCard(p) });
+    });
+
+  // Trier : les plus en retard en premier
+  priorityHTML.sort((a,b) => b.order - a.order);
+
+  const prioritySection = document.getElementById('prioritySection');
+  prioritySection.style.display = priorityHTML.length ? 'block' : 'none';
+  document.getElementById('listPriority').innerHTML = priorityHTML.map(x=>x.html).join('');
+
+  const todayDay = TODAY.getDay();
+  const tasks    = S.recurring
+    .filter(t => t.day===todayDay && !isDone(t.id, TODAY))
+    .sort((a,b) => a.priority-b.priority);
+
+  document.getElementById('listToday').innerHTML = tasks.length
+    ? tasks.map(t=>recurringCard(t,TODAY)).join('')
+    : '<div class="empty">Toutes les tâches du jour sont faites 🎉</div>';
+
+  // Demain (on n'affiche pas les tâches déjà faites demain non plus)
+  const TOMORROW = new Date(TODAY); TOMORROW.setDate(TODAY.getDate() + 1);
+  const tomorrowDay = TOMORROW.getDay();
+  const tomorrowTasks = S.recurring
+    .filter(t => t.day===tomorrowDay && !isDone(t.id, TOMORROW))
+    .sort((a,b) => a.priority-b.priority);
+  const tomorrowLabel = DAY_FULL[tomorrowDay] + ' ' + TOMORROW.getDate() + ' ' + MONTHS[TOMORROW.getMonth()];
+  document.getElementById('tomorrowLabel').textContent = 'Demain — ' + tomorrowLabel;
+  document.getElementById('listTomorrow').innerHTML = tomorrowTasks.length
+    ? tomorrowTasks.map(t => recurringCard(t, TOMORROW)).join('')
+    : '<div class="empty">Rien de prévu demain.</div>';
+
+  // Overview: ponctual actives
+  const activePonct = S.ponctual
+    .filter(t => !t.done)
+    .sort((a,b) => a.priority - b.priority);
+
+  const ponctHTML = activePonct.length
+    ? activePonct.map(t => {
+        const clr = CLIENTS[t.client]?.color || '#888';
+        const dl  = t.deadline ? ' — ' + new Date(t.deadline+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : '';
+        return `<div class="overview-row" data-client="${t.client}" onclick="onPonctToggle('${t.id}')">
+          <div class="overview-dot" style="background:${clr}"></div>
+          <span>${t.text}${dl ? '<span style="color:var(--muted);font-size:11px"> '+dl+'</span>' : ''}</span>
+        </div>`;
+      }).join('')
+    : '<div class="empty" style="padding:12px 0;font-size:12px">Aucune tâche ponctuelle active.</div>';
+
+  document.getElementById('overviewPonct').innerHTML = ponctHTML;
+
+  // Overview: projects
+  const projHTML = S.projects.length
+    ? S.projects.map(p => {
+        const clr   = CLIENTS[p.client]?.color || '#888';
+        const total = p.steps.length;
+        const done  = p.steps.filter(s=>s.done).length;
+        const pct   = total ? Math.round(done/total*100) : 0;
+        return `<div class="overview-row" data-client="${p.client}" onclick="switchTab('projects')">
+          <div class="overview-dot" style="background:${clr}"></div>
+          <span>${p.name}</span>
+          ${total ? `<span class="overview-pct">${pct}%</span>` : ''}
+        </div>`;
+      }).join('')
+    : '<div class="empty" style="padding:12px 0;font-size:12px">Aucun projet long terme.</div>';
+
+  document.getElementById('overviewProj').innerHTML = projHTML;
+
+  // Stats
+  const left = tasks.length + priorityHTML.length;
+
+  const todayTotal = S.recurring.filter(t=>t.day===TODAY.getDay()).length;
+  const todayDone  = todayTotal - tasks.length;
+  document.getElementById('sTodayLeft').textContent  = left;
+  document.getElementById('sDone').textContent       = todayDone;
+  document.getElementById('tBadgeToday').textContent = left;
+  document.getElementById('progToday').textContent   = `${todayDone}/${todayTotal} faites aujourd'hui`;
+}
+
+function renderWeek() {
+  // Mon → Sun
+  const dates = weekDates(TODAY);
+  const jsDay = [1,2,3,4,5,6,0]; // Mon=1 … Sun=0
+
+  document.getElementById('weekGrid').innerHTML = dates.map((date,i) => {
+    const day   = jsDay[i];
+    const tasks = S.recurring.filter(t=>t.day===day).sort((a,b)=>a.priority-b.priority);
+    const isT   = ds(date)===ds(TODAY);
+
+    const chips = tasks.map(t => {
+      const done = isDone(t.id, date);
+      const text = getTaskText(t, date);
+      return `<div class="chip ${done?'done':''}" data-client="${t.client}">${text}</div>`;
+    }).join('');
+
+    return `
+    <div class="day-col ${isT?'today':''}">
+      <div class="day-head">
+        <div class="day-name">${DAY_SHORT[day]}</div>
+        <div class="day-num">${date.getDate()}</div>
+      </div>
+      <div class="day-tasks">${chips||'<div style="font-size:11px;color:var(--muted);text-align:center;padding:10px">—</div>'}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPonctual() {
+  const filter = document.getElementById('filterPonctClient')?.value || '';
+  let list = [...S.ponctual];
+  if (filter) list = list.filter(t => t.client === filter);
+  list.sort((a,b) => {
+    if (a.done!==b.done) return a.done?1:-1;
+    if (a.priority!==b.priority) return a.priority-b.priority;
+    if (a.deadline&&b.deadline) return a.deadline.localeCompare(b.deadline);
+    return a.deadline?-1:b.deadline?1:0;
+  });
+
+  document.getElementById('listPonct').innerHTML = list.length
+    ? list.map(t=>ponctualCard(t)).join('')
+    : '<div class="empty">Aucune tâche ponctuelle — clique sur ＋ pour en ajouter.</div>';
+
+  document.getElementById('tBadgePonct').textContent = S.ponctual.filter(t=>!t.done).length;
+}
+
+function renderProjects() {
+  document.getElementById('tBadgeProj').textContent = S.projects.length;
+  const filter = document.getElementById('filterProjClient')?.value || '';
+  let projects = filter ? S.projects.filter(p => p.client === filter) : S.projects;
+  const el = document.getElementById('listProj');
+  if (!projects.length) { el.innerHTML='<div class="empty">Aucun projet — clique sur ＋ pour en ajouter.</div>'; return; }
+
+  el.innerHTML = projects.map(p => {
+    const total = p.steps.length;
+    const done  = p.steps.filter(s=>s.done).length;
+    const pct   = total ? Math.round(done/total*100) : 0;
+    const clr   = CLIENTS[p.client]?.color||'#888';
+    const dlStr = p.deadline ? new Date(p.deadline+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '';
+
+    const steps = p.steps.map((s,i) => `
+      <li class="step ${s.done?'done':''}" onclick="onStepToggle('${p.id}',${i})">
+        <div class="step-cb"></div><span>${s.text}</span>
+      </li>`).join('');
+
+    return `
+    <div class="project-card">
+      <div class="proj-header">
+        <div>
+          <div class="proj-title">${p.name}</div>
+          <div class="proj-meta" style="color:${clr}">${CLIENTS[p.client]?.name||p.client}${dlStr?' — deadline : '+dlStr:''}</div>
+          ${p.desc?`<div class="proj-desc">${p.desc}</div>`:''}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:13px;color:var(--muted)">${pct}%</span>
+          <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px" onclick="onProjEdit('${p.id}')">Modifier</button>
+        </div>
+      </div>
+      ${total?`<div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${clr}"></div></div>`:''}
+      ${total?`<ul class="step-list">${steps}</ul>`:'<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px">Aucune étape définie.</div>'}
+    </div>`;
+  }).join('');
+}
+
+function renderRecurring() {
+  const filter   = document.getElementById('filterRecurClient')?.value || '';
+  const dayOrder = [1,2,3,4,5,6,0];
+  let tasks = S.recurring;
+  if (filter) tasks = tasks.filter(t => t.client === filter);
+
+  let html = '';
+  dayOrder.forEach(day => {
+    const dayTasks = tasks.filter(t => t.day === day).sort((a,b) => a.priority - b.priority);
+    if (!dayTasks.length) return;
+    html += `
+      <div style="margin-bottom:24px">
+        <div class="section-label">${DAY_FULL[day]}</div>
+        <div class="task-list">${dayTasks.map(t => recurringCard(t, TODAY)).join('')}</div>
+      </div>`;
+  });
+  document.getElementById('listRecurring').innerHTML = html || '<div class="empty">Aucune tâche récurrente.</div>';
+}
+
+function renderAll() {
+  legend('legend2');
+  renderToday(); renderWeek(); renderRecurring(); renderPonctual(); renderProjects(); renderClients();
+}
+
+// ═══════════════════════════════════
+// EVENT HANDLERS
+// ═══════════════════════════════════
+
+function onRecurringClick(el) {
+  toggle(el.dataset.taskId, new Date(el.dataset.date+'T00:00:00'));
+  renderAll();
+}
+
+function onPonctToggle(id) {
+  const t = S.ponctual.find(x=>x.id===id);
+  if (t) { t.done=!t.done; save(); renderAll(); }
+}
+
+function onStepToggle(projId, i) {
+  const p = S.projects.find(x=>x.id===projId);
+  if (p?.steps[i]) { p.steps[i].done=!p.steps[i].done; save(); renderProjects(); }
+}
+
+// ── PONCTUAL MODAL ──
+let editPId = null;
+
+function openPonct(id=null) {
+  editPId = id;
+  const t = id ? S.ponctual.find(x=>x.id===id) : null;
+  document.getElementById('mPonctTitle').textContent = id ? 'Modifier la tâche' : 'Nouvelle tâche ponctuelle';
+  document.getElementById('fPText').value   = t?.text||'';
+  document.getElementById('fPClient').value = t?.client||'business';
+  document.getElementById('fPDate').value   = t?.deadline||'';
+  document.getElementById('fPPrio').value   = t?.priority||'2';
+  document.getElementById('btnDelPonct').style.display = id?'block':'none';
+  document.getElementById('mPonct').classList.add('open');
+  setTimeout(()=>document.getElementById('fPText').focus(),50);
+}
+
+function closePonct() { document.getElementById('mPonct').classList.remove('open'); editPId=null; }
+
+function savePonct() {
+  const text = document.getElementById('fPText').value.trim();
+  if (!text) return;
+  const data = {
+    text, client:document.getElementById('fPClient').value,
+    deadline:document.getElementById('fPDate').value,
+    priority:+document.getElementById('fPPrio').value,
+  };
+  if (editPId) {
+    const i = S.ponctual.findIndex(x=>x.id===editPId);
+    if (i!==-1) S.ponctual[i]={...S.ponctual[i],...data};
+  } else {
+    S.ponctual.push({id:'p-'+Date.now(), done:false, ...data});
+  }
+  save(); closePonct(); renderAll();
+}
+
+function delPonct() {
+  if (!editPId) return;
+  S.ponctual = S.ponctual.filter(x=>x.id!==editPId);
+  save(); closePonct(); renderAll();
+}
+
+function onPonctEdit(id,e) { e.stopPropagation(); openPonct(id); }
+
+// ── PROJECT MODAL ──
+let editJId = null;
+
+function openProj(id=null) {
+  editJId = id;
+  const p = id ? S.projects.find(x=>x.id===id) : null;
+  document.getElementById('mProjTitle').textContent = id ? 'Modifier le projet' : 'Nouveau projet';
+  document.getElementById('fJName').value   = p?.name||'';
+  document.getElementById('fJClient').value = p?.client||'nina';
+  document.getElementById('fJDesc').value   = p?.desc||'';
+  document.getElementById('fJDate').value   = p?.deadline||'';
+  document.getElementById('fJSteps').value  = (p?.steps||[]).map(s=>s.text).join('\n');
+  document.getElementById('btnDelProj').style.display = id?'block':'none';
+  document.getElementById('mProj').classList.add('open');
+}
+
+function closeProj() { document.getElementById('mProj').classList.remove('open'); editJId=null; }
+
+function saveProj() {
+  const name = document.getElementById('fJName').value.trim();
+  if (!name) return;
+  const existingSteps = editJId ? (S.projects.find(x=>x.id===editJId)?.steps||[]) : [];
+  const stepTexts = document.getElementById('fJSteps').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const steps = stepTexts.map(text => {
+    const ex = existingSteps.find(s=>s.text===text);
+    return {text, done:ex?.done||false};
+  });
+  const data = {
+    name, client:document.getElementById('fJClient').value,
+    desc:document.getElementById('fJDesc').value.trim(),
+    deadline:document.getElementById('fJDate').value, steps,
+  };
+  if (editJId) {
+    const i = S.projects.findIndex(x=>x.id===editJId);
+    if (i!==-1) S.projects[i]={...S.projects[i],...data};
+  } else {
+    S.projects.push({id:'proj-'+Date.now(),...data});
+  }
+  save(); closeProj(); renderProjects();
+}
+
+function delProj() {
+  if (!editJId) return;
+  S.projects = S.projects.filter(x=>x.id!==editJId);
+  save(); closeProj(); renderProjects();
+}
+
+function onProjEdit(id) { openProj(id); }
+
+// ── RECURRING MODAL ──
+let editRId = null;
+
+function openRecurModal(id, e) {
+  if (e) e.stopPropagation();
+  editRId = id;
+  const t = id ? S.recurring.find(x=>x.id===id) : null;
+  document.getElementById('mRecurTitle').textContent = id ? 'Modifier la tâche récurrente' : 'Nouvelle tâche récurrente';
+  document.getElementById('fRText').value        = t?.text || '';
+  document.getElementById('fRClient').value      = t?.client || 'nina';
+  document.getElementById('fRDay').value         = String(t?.day ?? 1);
+  document.getElementById('fRBadge').value       = t?.badge || 'email';
+  document.getElementById('fRPrio').value        = String(t?.priority ?? 2);
+  document.getElementById('fRAlternating').checked = !!t?.alternating;
+  document.getElementById('fRTextAlt').value     = t?.textAlt || '';
+  document.getElementById('fRAltBase').value     = t?.altBase || '';
+  document.getElementById('altFields').classList.toggle('visible', !!t?.alternating);
+  document.getElementById('btnDelRecur').style.display = id ? 'block' : 'none';
+  document.getElementById('mRecur').classList.add('open');
+  setTimeout(() => document.getElementById('fRText').focus(), 50);
+}
+
+function toggleAltFields() {
+  document.getElementById('altFields').classList.toggle('visible',
+    document.getElementById('fRAlternating').checked);
+}
+
+function closeRecurModal() {
+  document.getElementById('mRecur').classList.remove('open');
+  editRId = null;
+}
+
+function saveRecur() {
+  const text = document.getElementById('fRText').value.trim();
+  if (!text) return;
+  const isAlt = document.getElementById('fRAlternating').checked;
+  const data = {
+    text,
+    client:   document.getElementById('fRClient').value,
+    day:      +document.getElementById('fRDay').value,
+    badge:    document.getElementById('fRBadge').value,
+    priority: +document.getElementById('fRPrio').value,
+    alternating: isAlt || undefined,
+    textAlt:  isAlt ? document.getElementById('fRTextAlt').value.trim() : undefined,
+    altBase:  isAlt ? document.getElementById('fRAltBase').value : undefined,
+  };
+  if (editRId) {
+    const i = S.recurring.findIndex(x=>x.id===editRId);
+    if (i !== -1) S.recurring[i] = { ...S.recurring[i], ...data };
+  } else {
+    S.recurring.push({ id: 'r-' + Date.now(), ...data });
+  }
+  save(); closeRecurModal(); renderAll();
+}
+
+function delRecur() {
+  if (!editRId) return;
+  S.recurring = S.recurring.filter(x=>x.id!==editRId);
+  save(); closeRecurModal(); renderAll();
+}
+
+document.getElementById('btnCancelRecur').onclick = closeRecurModal;
+document.getElementById('btnSaveRecur').onclick   = saveRecur;
+document.getElementById('btnDelRecur').onclick    = delRecur;
+document.getElementById('mRecur').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeRecurModal(); });
+
+// ── CLIENTS ──
+function renderClients() {
+  document.getElementById('tBadgeClients').textContent = S.clients.length;
+  const el = document.getElementById('listClients');
+  if (!S.clients.length) {
+    el.innerHTML = '<div class="empty">Aucun client — clique sur ＋ pour en ajouter.</div>';
+    return;
+  }
+  el.innerHTML = S.clients.map(c => `
+    <div class="client-card">
+      <div class="client-card-header">
+        <div class="client-card-name">
+          <div class="client-color-bar" style="background:${c.color}"></div>
+          ${c.name}
+        </div>
+        <button class="btn btn-secondary" style="padding:5px 12px;font-size:12px" onclick="openClientModal('${c.id}')">Modifier</button>
+      </div>
+      <div class="client-card-body">${c.work ? c.work.replace(/\n/g,'<br>') : '<em>Aucune description</em>'}</div>
+      <div class="client-card-footer">
+        <span class="stat-link" onclick="switchTab('recurring','${c.id}')">${S.recurring.filter(t=>t.client===c.id).length} tâches récurrentes</span>
+        <span style="color:var(--border)">·</span>
+        <span class="stat-link" onclick="switchTab('ponctual','${c.id}')">${S.ponctual.filter(t=>t.client===c.id&&!t.done).length} ponctuelles actives</span>
+        <span style="color:var(--border)">·</span>
+        <span class="stat-link" onclick="switchTab('projects','${c.id}')">${S.projects.filter(p=>p.client===c.id).length} projet(s) long terme</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+let editCId = null;
+
+function openClientModal(id = null) {
+  editCId = id;
+  const c = id ? S.clients.find(x => x.id === id) : null;
+  document.getElementById('mClientTitle').textContent = id ? 'Modifier le client' : 'Nouveau client';
+  document.getElementById('fCName').value  = c?.name  || '';
+  document.getElementById('fCColor').value = c?.color || '#7c7cff';
+  document.getElementById('fCWork').value  = c?.work  || '';
+  document.getElementById('btnDelClient').style.display = id ? 'block' : 'none';
+  document.getElementById('mClient').classList.add('open');
+  setTimeout(() => document.getElementById('fCName').focus(), 50);
+}
+
+function closeClientModal() {
+  document.getElementById('mClient').classList.remove('open');
+  editCId = null;
+}
+
+function saveClient() {
+  const name = document.getElementById('fCName').value.trim();
+  if (!name) return;
+  const data = {
+    name,
+    color: document.getElementById('fCColor').value,
+    work:  document.getElementById('fCWork').value.trim(),
+  };
+  if (editCId) {
+    const i = S.clients.findIndex(x => x.id === editCId);
+    if (i !== -1) S.clients[i] = { ...S.clients[i], ...data };
+  } else {
+    const newId = 'client-' + Date.now();
+    S.clients.push({ id: newId, ...data });
+  }
+  save(); rebuildClientsMap(); populateClientSelects();
+  closeClientModal(); renderAll();
+}
+
+function delClient() {
+  if (!editCId) return;
+  S.clients = S.clients.filter(x => x.id !== editCId);
+  save(); rebuildClientsMap(); populateClientSelects();
+  closeClientModal(); renderAll();
+}
+
+document.getElementById('btnAddClient').onclick    = () => openClientModal();
+document.getElementById('btnCancelClient').onclick = closeClientModal;
+document.getElementById('btnSaveClient').onclick   = saveClient;
+document.getElementById('btnDelClient').onclick    = delClient;
+document.getElementById('mClient').addEventListener('click', e => { if (e.target === e.currentTarget) closeClientModal(); });
+
+function switchTab(name, clientFilter) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector(`.tab-btn[data-tab="${name}"]`).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if (clientFilter !== undefined) {
+    const map = { recurring:'filterRecurClient', ponctual:'filterPonctClient', projects:'filterProjClient' };
+    const el = document.getElementById(map[name]);
+    if (el) el.value = clientFilter;
+  }
+  if (name === 'recurring') renderRecurring();
+  if (name === 'ponctual')  renderPonctual();
+  if (name === 'projects')  renderProjects();
+}
+
+// ── TABS ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ── WIRE BUTTONS ──
+document.getElementById('btnAddPonct').onclick   = ()=>openPonct();
+document.getElementById('btnCancelPonct').onclick = closePonct;
+document.getElementById('btnSavePonct').onclick   = savePonct;
+document.getElementById('btnDelPonct').onclick    = delPonct;
+
+document.getElementById('btnAddProj').onclick    = ()=>openProj();
+document.getElementById('btnCancelProj').onclick  = closeProj;
+document.getElementById('btnSaveProj').onclick    = saveProj;
+document.getElementById('btnDelProj').onclick     = delProj;
+
+document.getElementById('mPonct').addEventListener('click', e=>{ if(e.target===e.currentTarget) closePonct(); });
+document.getElementById('mProj').addEventListener('click',  e=>{ if(e.target===e.currentTarget) closeProj(); });
+
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closePonct(); closeProj(); closeRecurModal(); closeClientModal(); } });
+
+// ── HEADER ──
+(function() {
+  const d = TODAY;
+  document.getElementById('hDate').textContent =
+    `${DAY_FULL[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+})();
+
+// ── INIT ──
+populateClientSelects();
+renderAll();
+
+// ── GITHUB SYNC AU DÉMARRAGE ──
+(async () => {
+  setSync('saving', 'Connexion…');
+  const ghData = await ghLoad();
+
+  // GitHub vide → on uploade le localStorage existant
+  const ghEmpty = !ghData
+    || (!ghData.clients && !ghData.recurring
+        && !ghData.ponctual?.length && !ghData.projects?.length);
+
+  if (ghEmpty) {
+    // Première fois : on envoie le localStorage vers GitHub
+    const ok = await ghSave(S);
+    setSync(ok ? 'synced' : 'error', ok ? 'Synchronisé' : 'Erreur sync');
+  } else {
+    // GitHub a des données → on les utilise
+    S = ghData;
+    if (!S.recurring) S.recurring = DEFAULT_RECURRING.map(t => ({...t}));
+    if (!S.clients)   S.clients   = DEFAULT_CLIENTS.map(c => ({...c}));
+    cacheLS();
+    ghSha = ghSha; // déjà stocké par ghLoad()
+    setSync('synced', 'Synchronisé');
+    rebuildClientsMap();
+    populateClientSelects();
+    renderAll();
+  }
+})();
+
+// ── TOKEN MODAL ──
+function openTokenModal() {
+  document.getElementById('tokenInput').value = GH_TOKEN;
+  document.getElementById('tokenModal').classList.add('open');
+  document.getElementById('tokenInput').focus();
+}
+function closeTokenModal() {
+  document.getElementById('tokenModal').classList.remove('open');
+}
+function saveToken() {
+  const t = document.getElementById('tokenInput').value.trim();
+  if (!t) return;
+  GH_TOKEN = t;
+  localStorage.setItem('gc_gh_token', t);
+  closeTokenModal();
+  setSync('saving', 'Test…');
+  // Relancer la sync
+  ghLoad().then(d => {
+    if (d) setSync('synced', 'Synchronisé');
+    else   setSync('error',  'Erreur sync');
+  });
+}
+document.getElementById('btnSaveToken').onclick  = saveToken;
+document.getElementById('btnCancelToken').onclick = closeTokenModal;
+document.getElementById('tokenModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeTokenModal();
+});
+document.getElementById('tokenInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveToken();
+});
+</script>
+
+<!-- MODAL TOKEN -->
+<div class="modal-overlay" id="tokenModal">
+  <div class="modal" style="max-width:460px">
+    <h2 style="margin-bottom:8px">🔑 Token GitHub</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px">
+      Entré une seule fois par appareil. Stocké localement, jamais dans le code.<br>
+      <a href="https://github.com/settings/personal-access-tokens/new" target="_blank"
+         style="color:var(--accent)">Créer un token →</a>
+      (Contents: Read &amp; Write sur <code>giacomo-board</code>)
+    </p>
+    <div class="form-group">
+      <label>Token</label>
+      <input type="password" id="tokenInput" placeholder="github_pat_..." />
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" id="btnCancelToken">Annuler</button>
+      <button class="btn btn-primary"   id="btnSaveToken">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
