@@ -1015,10 +1015,11 @@ async function ghSave(data) {
       const j = await r.json();
       ghSha = j.sha;
     }
-    // Encodage UTF-8 propre (accents, caractères spéciaux)
+    // Encodage UTF-8 propre — loop pour éviter stack overflow sur gros fichiers
     const json    = JSON.stringify(data, null, 2);
     const encoded = new TextEncoder().encode(json);
-    const binary  = String.fromCharCode(...encoded);
+    let binary = '';
+    for (let i = 0; i < encoded.length; i++) binary += String.fromCharCode(encoded[i]);
     const content = btoa(binary);
     const r = await fetch(GH_API, {
       method: 'PUT',
