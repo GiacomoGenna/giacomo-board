@@ -1008,29 +1008,34 @@ async function ghLoad() {
   } catch(e) { return null; }
 }
 
-async function ghSave(data) {
+async function ghSave(data, retry = true) {
   try {
-    if (!ghSha) {
-      const r = await fetch(GH_API, { headers: { Authorization: `token ${GH_TOKEN}` } });
-      const j = await r.json();
-      ghSha = j.sha;
-    }
-    // Encodage UTF-8 propre — loop pour éviter stack overflow sur gros fichiers
+    // Toujours récupérer le SHA frais avant d'écrire
+    const rGet = await fetch(GH_API);
+    if (!rGet.ok) throw new Error('read ' + rGet.status);
+    const jGet = await rGet.json();
+    ghSha = jGet.sha;
+
+    // Encodage UTF-8 — loop pour éviter stack overflow sur gros fichiers
     const json    = JSON.stringify(data, null, 2);
     const encoded = new TextEncoder().encode(json);
     let binary = '';
     for (let i = 0; i < encoded.length; i++) binary += String.fromCharCode(encoded[i]);
     const content = btoa(binary);
-    const r = await fetch(GH_API, {
+
+    const rPut = await fetch(GH_API, {
       method: 'PUT',
       headers: { Authorization: `token ${GH_TOKEN}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: 'Update board data', content, sha: ghSha })
     });
-    if (!r.ok) throw new Error(r.status);
-    const j = await r.json();
-    ghSha = j.content.sha;
+    if (!rPut.ok) throw new Error('write ' + rPut.status);
+    const jPut = await rPut.json();
+    ghSha = jPut.content.sha;
     return true;
-  } catch(e) { return false; }
+  } catch(e) {
+    console.warn('ghSave error:', e.message);
+    return false;
+  }
 }
 
 // ═══════════════════════════════════
