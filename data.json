@@ -250,6 +250,14 @@
       "day": 3,
       "badge": "linkedin",
       "priority": 2
+    },
+    {
+      "id": "r-1774424484466",
+      "text": "Poster sur Linkedin JEUDI Nina #2",
+      "client": "nina",
+      "day": 4,
+      "badge": "linkedin",
+      "priority": 2
     }
   ],
   "clients": [
