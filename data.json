@@ -199,7 +199,7 @@
       "id": "r-elo-val",
       "day": 4,
       "client": "elodie",
-      "priority": 1,
+      "priority": 2,
       "badge": "validation",
       "text": "Envoyer email à Élodie pour validation avant vendredi"
     },
