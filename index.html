@@ -1261,8 +1261,14 @@ function renderToday() {
   }
 
   // 2. Ponctuelles urgentes / en retard
+  // Afficher si : priorité urgente (1) OU deadline aujourd'hui/dépassée
   S.ponctual
-    .filter(t => { if(t.done||!t.deadline) return false; const dl=new Date(t.deadline+'T00:00:00'); return dl<tmEnd; })
+    .filter(t => {
+      if (t.done) return false;
+      if (t.priority === 1) return true; // urgent → toujours affiché
+      if (!t.deadline) return false;
+      return new Date(t.deadline+'T00:00:00') < tmEnd; // deadline aujourd'hui ou passée
+    })
     .sort((a,b) => a.priority-b.priority)
     .forEach(t => {
       const dl = new Date(t.deadline+'T00:00:00');
