@@ -995,8 +995,10 @@ function setSync(status, label) {
 
 async function ghLoad() {
   try {
-    // Lecture sans token (repo public)
-    const r = await fetch(GH_API);
+    // Timestamp anti-cache + token pour avoir les données fraîches (pas le CDN en cache)
+    const r = await fetch(GH_API + '?t=' + Date.now(), {
+      headers: GH_TOKEN ? { Authorization: `token ${GH_TOKEN}` } : {}
+    });
     if (!r.ok) throw new Error(r.status);
     const j = await r.json();
     ghSha = j.sha;
