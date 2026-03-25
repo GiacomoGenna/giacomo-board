@@ -135,9 +135,9 @@
       "id": "r-nin-pro",
       "day": 2,
       "client": "nina",
-      "priority": 2,
-      "badge": "email",
-      "text": "Rédiger & envoyer email PRO MERCREDI Nina"
+      "priority": 3,
+      "badge": "write",
+      "text": "Email PRO MERCREDI Nina"
     },
     {
       "id": "r-chr-jeu-wrt",
