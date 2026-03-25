@@ -240,11 +240,45 @@
 
     .day-tasks { padding: 8px; }
 
+    /* ── TOAST ANNULER ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--s3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 13px;
+      color: var(--text);
+      z-index: 9999;
+      box-shadow: 0 8px 30px rgba(0,0,0,.5);
+      transition: transform .25s ease;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast-undo {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .toast-undo:hover { opacity: .85; }
+
     .chip {
       font-size: 11px;
       padding: 5px 8px;
       margin-bottom: 4px;
       border-radius: 5px;
+      cursor: pointer;
       background: var(--s3);
       color: var(--text);
       border-left: 2px solid transparent;
@@ -1378,7 +1412,7 @@ function renderWeek() {
     const chips = tasks.map(t => {
       const done = isDone(t.id, date);
       const text = getTaskText(t, date);
-      return `<div class="chip ${done?'done':''}" data-client="${t.client}">${text}</div>`;
+      return `<div class="chip ${done?'done':''}" data-client="${t.client}" onclick="onChipClick('${t.id}','${ds(date)}')" title="${done?'Cliquer pour décocher':'Cliquer pour cocher'}">${text}</div>`;
     }).join('');
 
     return `
@@ -1476,9 +1510,47 @@ function renderAll() {
 // EVENT HANDLERS
 // ═══════════════════════════════════
 
+// ── TOAST ANNULER ──
+let toastTimer = null;
+let lastToggle = null; // { taskId, date }
+
+function showToast(taskText) {
+  lastToggle && clearTimeout(toastTimer);
+  document.getElementById('toastMsg').textContent = '✓ ' + taskText.slice(0, 50) + (taskText.length > 50 ? '…' : '');
+  const t = document.getElementById('toastUndo');
+  t.classList.add('show');
+  toastTimer = setTimeout(() => { t.classList.remove('show'); lastToggle = null; }, 5000);
+}
+
+function undoLastToggle() {
+  if (!lastToggle) return;
+  clearTimeout(toastTimer);
+  toggle(lastToggle.taskId, lastToggle.date);
+  lastToggle = null;
+  document.getElementById('toastUndo').classList.remove('show');
+  save(); renderAll();
+}
+
 function onRecurringClick(el) {
-  toggle(el.dataset.taskId, new Date(el.dataset.date+'T00:00:00'));
-  renderAll();
+  const taskId = el.dataset.taskId;
+  const date   = new Date(el.dataset.date + 'T00:00:00');
+  const task   = S.recurring.find(t => t.id === taskId);
+  toggle(taskId, date);
+  // Stocker pour undo seulement si on vient de cocher (pas décocher)
+  if (isDone(taskId, date)) {
+    lastToggle = { taskId, date };
+    showToast(task ? getTaskText(task, date) : taskId);
+  } else {
+    lastToggle = null;
+    document.getElementById('toastUndo').classList.remove('show');
+  }
+  save(); renderAll();
+}
+
+function onChipClick(taskId, dateStr) {
+  const date = new Date(dateStr + 'T00:00:00');
+  toggle(taskId, date);
+  save(); renderAll();
 }
 
 function onPonctToggle(id) {
@@ -1852,6 +1924,12 @@ function saveToken() {
       <button class="btn btn-primary" onclick="saveToken()">Enregistrer</button>
     </div>
   </div>
+</div>
+
+<!-- TOAST ANNULER -->
+<div class="toast" id="toastUndo">
+  <span id="toastMsg">Tâche cochée</span>
+  <button class="toast-undo" onclick="undoLastToggle()">Annuler</button>
 </div>
 
 </body>
