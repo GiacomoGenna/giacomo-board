@@ -22,7 +22,16 @@
     "r-nin-li1__2026-03-23": true,
     "r-seb-mar-val__2026-03-23": true
   },
-  "ponctual": [],
+  "ponctual": [
+    {
+      "id": "p-1774385886590",
+      "done": false,
+      "text": "asda",
+      "client": "business",
+      "deadline": "",
+      "priority": 2
+    }
+  ],
   "projects": [
     {
       "id": "proj-nina-funnel",
@@ -69,15 +78,15 @@
       "client": "christian",
       "priority": 1,
       "badge": "validation",
-      "text": "Envoyer post LinkedIn LUNDI à Christian (il poste lui-même)"
+      "text": "Envoyer post LinkedIn LUNDI à Christian"
     },
     {
       "id": "r-seb-mar-wrt0",
       "day": 0,
       "client": "sebastien",
-      "priority": 2,
-      "badge": "write",
-      "text": "Rédiger post LinkedIn MARDI pour Sébastien"
+      "priority": 1,
+      "badge": "validation",
+      "text": "Envoyer post LinkedIn MARDI à Sébastien"
     },
     {
       "id": "r-seb-mar-val",
@@ -85,7 +94,7 @@
       "client": "sebastien",
       "priority": 1,
       "badge": "validation",
-      "text": "Envoyer post LinkedIn MARDI à Sébastien (il poste lui-même)"
+      "text": "Envoyer post LinkedIn MARDI à Sébastien"
     },
     {
       "id": "r-nin-mon-email",
@@ -112,7 +121,7 @@
       "client": "nina",
       "priority": 2,
       "badge": "email",
-      "text": "Rédiger & envoyer email PRO Nina"
+      "text": "Rédiger & envoyer email PRO MERCREDI Nina"
     },
     {
       "id": "r-chr-jeu-wrt",
@@ -120,7 +129,7 @@
       "client": "christian",
       "priority": 3,
       "badge": "write",
-      "text": "Commencer post LinkedIn JEUDI pour Christian"
+      "text": "Post LinkedIn JEUDI pour Christian"
     },
     {
       "id": "r-seb-jeu-wrt",
@@ -128,7 +137,7 @@
       "client": "sebastien",
       "priority": 3,
       "badge": "write",
-      "text": "Commencer post LinkedIn JEUDI pour Sébastien"
+      "text": "Post LinkedIn JEUDI pour Sébastien"
     },
     {
       "id": "r-chr-jeu-val",
@@ -136,7 +145,7 @@
       "client": "christian",
       "priority": 1,
       "badge": "validation",
-      "text": "Envoyer post LinkedIn JEUDI à Christian (il poste lui-même)"
+      "text": "Envoyer post LinkedIn JEUDI à Christian"
     },
     {
       "id": "r-seb-jeu-val",
@@ -144,7 +153,7 @@
       "client": "sebastien",
       "priority": 1,
       "badge": "validation",
-      "text": "Envoyer post LinkedIn JEUDI à Sébastien (il poste lui-même)"
+      "text": "Envoyer post LinkedIn JEUDI à Sébastien"
     },
     {
       "id": "r-elo-wrt",
@@ -184,7 +193,7 @@
       "client": "elodie",
       "priority": 1,
       "badge": "urgent",
-      "text": "🚨 Mettre l'email Ãlodie dans son logiciel â envoi automatique Ã  7h15"
+      "text": "🚨 Mettre le mail dans SIO et envoyer"
     },
     {
       "id": "r-nin-fri-email",
@@ -200,15 +209,15 @@
       "client": "christian",
       "priority": 2,
       "badge": "write",
-      "text": "Commencer post LinkedIn LUNDI pour Christian (à envoyer dimanche)"
+      "text": "Post LinkedIn LUNDI pour Christian"
     },
     {
       "id": "r-seb-mar-wrt5",
       "day": 5,
       "client": "sebastien",
-      "priority": 2,
+      "priority": 3,
       "badge": "write",
-      "text": "Commencer post LinkedIn MARDI pour Sébastien (à envoyer lundi)"
+      "text": "Post LinkedIn MARDI pour Sébastien"
     },
     {
       "id": "r-nin-sat-email",
@@ -217,22 +226,6 @@
       "priority": 1,
       "badge": "email",
       "text": "RÃ©diger & envoyer email Nina â 📹 VidÃ©o YouTube (samedi)"
-    },
-    {
-      "id": "r-chr-lun-fin",
-      "day": 6,
-      "client": "christian",
-      "priority": 2,
-      "badge": "validation",
-      "text": "Finaliser post lundi Christian — à envoyer demain (dimanche)"
-    },
-    {
-      "id": "r-seb-mar-fin",
-      "day": 6,
-      "client": "sebastien",
-      "priority": 3,
-      "badge": "write",
-      "text": "Finaliser post mardi Sébastien — à envoyer lundi"
     }
   ],
   "clients": [
