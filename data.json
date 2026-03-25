@@ -105,14 +105,6 @@
       "text": "Envoyer post LinkedIn MARDI à Sébastien"
     },
     {
-      "id": "r-seb-mar-val",
-      "day": 1,
-      "client": "sebastien",
-      "priority": 1,
-      "badge": "validation",
-      "text": "Envoyer post LinkedIn MARDI à Sébastien"
-    },
-    {
       "id": "r-nin-mon-email",
       "day": 1,
       "client": "nina",
