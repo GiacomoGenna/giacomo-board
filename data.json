@@ -38,6 +38,14 @@
       "client": "nina",
       "deadline": "",
       "priority": 1
+    },
+    {
+      "id": "p-1774433433655",
+      "done": false,
+      "text": "Séquence mail Académie à terminer",
+      "client": "nina",
+      "deadline": "",
+      "priority": 1
     }
   ],
   "projects": [
