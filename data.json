@@ -38,6 +38,14 @@
       "client": "business",
       "deadline": "",
       "priority": 2
+    },
+    {
+      "id": "p-1774416786914",
+      "done": false,
+      "text": "Faire mail post inscription event teasing hot list",
+      "client": "business",
+      "deadline": "",
+      "priority": 2
     }
   ],
   "projects": [
