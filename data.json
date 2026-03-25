@@ -22,16 +22,7 @@
     "r-nin-li1__2026-03-23": true,
     "r-seb-mar-val__2026-03-23": true
   },
-  "ponctual": [
-    {
-      "id": "p-1774385886590",
-      "done": false,
-      "text": "asda",
-      "client": "business",
-      "deadline": "",
-      "priority": 2
-    }
-  ],
+  "ponctual": [],
   "projects": [
     {
       "id": "proj-nina-funnel",
