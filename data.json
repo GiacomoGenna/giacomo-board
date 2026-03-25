@@ -52,24 +52,16 @@
     {
       "id": "proj-nina-funnel",
       "client": "nina",
-      "name": "Funnel complet — Nina Voit",
-      "desc": "Lancement, page de vente, séquence d'emails",
-      "deadline": "",
+      "name": "Funnel Alchimie à refaire",
+      "desc": "Reprendre le tunnel de l'Académie et adapter pour l'alchimiste",
+      "deadline": "2026-03-31",
       "steps": [
         {
-          "text": "Écrire la page de vente",
+          "text": "Dupliquer",
           "done": false
         },
         {
-          "text": "Créer la séquence d'emails (funnel)",
-          "done": false
-        },
-        {
-          "text": "Rédiger la séquence de lancement",
-          "done": false
-        },
-        {
-          "text": "Emails post-achat",
+          "text": "Faire les modifs avec une nouvelle promesse",
           "done": false
         },
         {
