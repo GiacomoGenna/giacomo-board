@@ -266,6 +266,14 @@
       "day": 4,
       "badge": "email",
       "priority": 1
+    },
+    {
+      "id": "r-1774425631753",
+      "text": "Poster sur LinkedIn MARDI Nina #1",
+      "client": "nina",
+      "day": 2,
+      "badge": "linkedin",
+      "priority": 2
     }
   ],
   "clients": [
