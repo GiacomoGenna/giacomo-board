@@ -1353,9 +1353,14 @@ function renderToday() {
     ? tomorrowTasks.map(t => recurringCard(t, TOMORROW)).join('')
     : '<div class="empty">Rien de prévu demain.</div>';
 
-  // Overview: ponctual actives
+  // Overview: ponctual actives — exclure celles déjà dans la section priorité
   const activePonct = S.ponctual
-    .filter(t => !t.done)
+    .filter(t => {
+      if (t.done) return false;
+      if (t.priority === 1) return false; // déjà dans priorité
+      if (t.deadline && new Date(t.deadline+'T00:00:00') < tmEnd) return false; // deadline passée ou aujourd'hui → déjà dans priorité
+      return true;
+    })
     .sort((a,b) => a.priority - b.priority);
 
   const ponctHTML = activePonct.length
