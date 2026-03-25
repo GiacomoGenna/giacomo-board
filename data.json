@@ -258,6 +258,14 @@
       "day": 4,
       "badge": "linkedin",
       "priority": 2
+    },
+    {
+      "id": "r-1774424542949",
+      "text": "Envoyer email PRO JEUDI Nina",
+      "client": "nina",
+      "day": 4,
+      "badge": "email",
+      "priority": 1
     }
   ],
   "clients": [
