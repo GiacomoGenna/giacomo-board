@@ -1021,11 +1021,10 @@ async function ghSave(data) {
   // Jusqu'à 3 tentatives (en cas de conflit SHA)
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      // SHA frais à chaque tentative — Cache-Control pour éviter le cache CDN
-      const rGet = await fetch(GH_API, { headers: {
-        Authorization: `token ${GH_TOKEN}`,
-        'Cache-Control': 'no-cache, no-store'
-      }});
+      // SHA frais à chaque tentative — timestamp pour bypasser le cache CDN (Cache-Control bloqué par CORS)
+      const rGet = await fetch(GH_API + '?t=' + Date.now(), {
+        headers: { Authorization: `token ${GH_TOKEN}` }
+      });
       if (!rGet.ok) throw new Error('read ' + rGet.status);
       const jGet = await rGet.json();
       ghSha = jGet.sha;
