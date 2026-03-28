@@ -204,14 +204,6 @@
       "text": "Envoyer email à Élodie pour validation avant vendredi"
     },
     {
-      "id": "r-elo-log",
-      "day": 5,
-      "client": "elodie",
-      "priority": 1,
-      "badge": "urgent",
-      "text": "🚨 Mettre le mail dans SIO et envoyer"
-    },
-    {
       "id": "r-nin-fri-email",
       "day": 5,
       "client": "nina",
