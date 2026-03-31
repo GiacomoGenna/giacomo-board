@@ -74,26 +74,46 @@
       "client": "nina",
       "deadline": "2026-04-12",
       "priority": 2
+    },
+    {
+      "id": "p-1774946364",
+      "client": "nina",
+      "text": "Lancement newsletter PRO (1x/sem)",
+      "deadline": "",
+      "priority": 2,
+      "done": false
     }
   ],
   "projects": [
     {
       "id": "proj-nina-funnel",
       "client": "nina",
-      "name": "Funnel Alchimie à refaire",
-      "desc": "Reprendre le tunnel de l'Académie et adapter pour l'alchimiste",
-      "deadline": "2026-03-31",
+      "name": "Alchimiste — Tunnel complet",
+      "desc": "Reconstruction complète du funnel Alchimiste",
+      "deadline": "2026-04-30",
       "steps": [
         {
-          "text": "Dupliquer",
+          "text": "Dupliquer la page de Hugo + rentrer les infos Alchimiste",
           "done": false
         },
         {
-          "text": "Faire les modifs avec une nouvelle promesse",
+          "text": "Page d'optin → deadline 3 avril",
           "done": false
         },
         {
-          "text": "Révisions & relecture finale",
+          "text": "Refaire tunnel : promesse à retravailler + branding visuel",
+          "done": false
+        },
+        {
+          "text": "Page de présentation Alchimiste (plus tard)",
+          "done": false
+        },
+        {
+          "text": "A/B test pages de capture",
+          "done": false
+        },
+        {
+          "text": "Campagnes CTA VSL → renvoyer sur nurturing + modifs emails → deadline 30 avril",
           "done": false
         }
       ]
@@ -105,6 +125,69 @@
       "desc": "",
       "deadline": "",
       "steps": []
+    },
+    {
+      "id": "proj-nina-academie",
+      "client": "nina",
+      "name": "Académie — Lancement",
+      "desc": "",
+      "deadline": "2026-04-03",
+      "steps": [
+        {
+          "text": "Finaliser séquence mail Académie post inscription",
+          "done": false
+        },
+        {
+          "text": "Brancher les emails du lancement 2024 / suite post VSL (à chercher)",
+          "done": false
+        },
+        {
+          "text": "Changer l'image de la page de garde",
+          "done": false
+        },
+        {
+          "text": "A/B test avec accroche différente (celle de Nina)",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "proj-nina-yinyang",
+      "client": "nina",
+      "name": "Yin Yang / Cra-cra — Funnel",
+      "desc": "",
+      "deadline": "2026-05-31",
+      "steps": [
+        {
+          "text": "Page de capture à refaire",
+          "done": false
+        },
+        {
+          "text": "Mise en place A/B test",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "proj-nina-dbs",
+      "client": "nina",
+      "name": "RDV DBS + Poids Humidité — Funnels",
+      "desc": "",
+      "deadline": "2026-06-30",
+      "steps": [
+        {
+          "text": "Même protocole sur les deux funnels",
+          "done": false
+        },
+        {
+          "text": "Bilan à mi-parcours : ajustement du plan juillet+",
+          "done": false
+        },
+        {
+          "text": "Brief Alchimiste EL / Cure / Praticien pour lancement H2",
+          "done": false
+        }
+      ]
     }
   ],
   "recurring": [
