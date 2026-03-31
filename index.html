@@ -347,6 +347,15 @@
     }
     .step.done .step-cb { background: var(--muted); border-color: var(--muted); }
     .step.done .step-cb::after { content: '✓'; font-size: 9px; color: var(--bg); font-weight: 800; }
+    .step-date { font-size: 11px; color: var(--muted); margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+    .step-date.due-today { color: #f59e0b; font-weight: 600; }
+    .step-date.overdue { color: #f87171; font-weight: 600; }
+
+    /* Step rows in modal */
+    .step-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .step-row input[type=text] { flex: 1; }
+    .step-row input[type=date] { width: 136px; flex-shrink: 0; }
+    .step-row .del-step { width: 28px; height: 28px; border-radius: 6px; border: none; background: #ef444422; color: #f87171; cursor: pointer; font-size: 18px; line-height: 1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
     /* ── MODAL ── */
     .overlay {
@@ -788,8 +797,9 @@
       <input id="fJDate" type="date" />
     </div>
     <div class="form-row">
-      <label>Étapes (une par ligne)</label>
-      <textarea id="fJSteps" rows="5" placeholder="Écrire la page de vente&#10;Créer la séquence emails&#10;Rédiger le lancement&#10;…"></textarea>
+      <label>Étapes</label>
+      <div id="fJStepsList"></div>
+      <button type="button" onclick="addStepRow()" style="margin-top:6px;padding:6px 14px;font-size:12px;border-radius:8px;border:1px dashed var(--border);background:none;color:var(--muted);cursor:pointer;width:100%">+ Ajouter une étape</button>
     </div>
     <div class="form-actions">
       <button class="btn btn-danger" id="btnDelProj" style="display:none">Supprimer</button>
@@ -1280,6 +1290,29 @@ function projectAlertCard(p) {
   </div>`;
 }
 
+function projectStepCard(p, stepIdx) {
+  const s   = p.steps[stepIdx];
+  const clr = CLIENTS[p.client]?.color || '#888';
+  const tm  = todayMidnight();
+  const dl  = s.date ? new Date(s.date+'T00:00:00') : null;
+  const isOverdue  = dl && dl < tm;
+  const dateLabel  = dl ? dl.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : '';
+  return `
+  <div class="task ${isOverdue?'task-overdue':''}" data-client="${p.client}"
+       onclick="onStepToggle('${p.id}',${stepIdx})">
+    <div class="cb"></div>
+    <div class="task-body">
+      <div class="task-meta">
+        <span class="badge" data-client="${p.client}">${CLIENTS[p.client]?.name||p.client}</span>
+        <span class="badge">📁 ${p.name}</span>
+        ${isOverdue?'<span class="badge b-overdue">⏰ En retard</span>':''}
+      </div>
+      <div class="task-text">${s.text}</div>
+      ${dateLabel?`<div class="task-deadline ${isOverdue?'overdue':''}">📅 ${dateLabel}</div>`:''}
+    </div>
+  </div>`;
+}
+
 function renderToday() {
   const tm    = todayMidnight();
   const tmEnd = new Date(tm); tmEnd.setDate(tmEnd.getDate()+1);
@@ -1324,6 +1357,17 @@ function renderToday() {
       const daysLate = Math.floor((tm - dl) / 86400000);
       priorityHTML.push({ order: daysLate * 10, html: projectAlertCard(p) });
     });
+
+  // 4. Étapes de projets avec date ≤ aujourd'hui (non terminées)
+  S.projects.forEach(p => {
+    p.steps.forEach((s, i) => {
+      if (s.done || !s.date) return;
+      const dl = new Date(s.date+'T00:00:00');
+      if (dl >= tmEnd) return; // date future → pas dans aujourd'hui
+      const daysLate = Math.max(0, Math.floor((tm - dl) / 86400000));
+      priorityHTML.push({ order: daysLate * 10 + 5, html: projectStepCard(p, i) });
+    });
+  });
 
   // Trier : les plus en retard en premier
   priorityHTML.sort((a,b) => b.order - a.order);
@@ -1463,10 +1507,20 @@ function renderProjects() {
     const clr   = CLIENTS[p.client]?.color||'#888';
     const dlStr = p.deadline ? new Date(p.deadline+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '';
 
-    const steps = p.steps.map((s,i) => `
+    const tmNow = todayMidnight();
+    const tmEnd2 = new Date(tmNow); tmEnd2.setDate(tmEnd2.getDate()+1);
+    const steps = p.steps.map((s,i) => {
+      const dl = s.date ? new Date(s.date+'T00:00:00') : null;
+      const overdue = dl && !s.done && dl < tmNow;
+      const dueToday = dl && !s.done && dl >= tmNow && dl < tmEnd2;
+      const dateStr = dl ? dl.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : '';
+      const dateCls = overdue ? 'overdue' : dueToday ? 'due-today' : '';
+      return `
       <li class="step ${s.done?'done':''}" onclick="onStepToggle('${p.id}',${i})">
         <div class="step-cb"></div><span>${s.text}</span>
-      </li>`).join('');
+        ${dateStr?`<span class="step-date ${dateCls}">📅 ${dateStr}</span>`:''}
+      </li>`;
+    }).join('');
 
     return `
     <div class="project-card">
@@ -1565,7 +1619,7 @@ function onPonctToggle(id) {
 
 function onStepToggle(projId, i) {
   const p = S.projects.find(x=>x.id===projId);
-  if (p?.steps[i]) { p.steps[i].done=!p.steps[i].done; save(); renderProjects(); }
+  if (p?.steps[i]) { p.steps[i].done=!p.steps[i].done; save(); renderAll(); }
 }
 
 // ── PONCTUAL MODAL ──
@@ -1614,6 +1668,18 @@ function onPonctEdit(id,e) { e.stopPropagation(); openPonct(id); }
 // ── PROJECT MODAL ──
 let editJId = null;
 
+function addStepRow(text='', date='', done=false) {
+  const div = document.createElement('div');
+  div.className = 'step-row';
+  div.dataset.done = done ? '1' : '0';
+  div.innerHTML = `
+    <input type="text" placeholder="Étape…" value="${text.replace(/"/g,'&quot;')}" style="flex:1" />
+    <input type="date" value="${date||''}" title="Date prévue (optionnel)" />
+    <button type="button" class="del-step" onclick="this.parentElement.remove()" title="Supprimer">×</button>
+  `;
+  document.getElementById('fJStepsList').appendChild(div);
+}
+
 function openProj(id=null) {
   editJId = id;
   const p = id ? S.projects.find(x=>x.id===id) : null;
@@ -1622,7 +1688,8 @@ function openProj(id=null) {
   document.getElementById('fJClient').value = p?.client||'nina';
   document.getElementById('fJDesc').value   = p?.desc||'';
   document.getElementById('fJDate').value   = p?.deadline||'';
-  document.getElementById('fJSteps').value  = (p?.steps||[]).map(s=>s.text).join('\n');
+  document.getElementById('fJStepsList').innerHTML = '';
+  (p?.steps||[]).forEach(s => addStepRow(s.text, s.date||'', s.done||false));
   document.getElementById('btnDelProj').style.display = id?'block':'none';
   document.getElementById('mProj').classList.add('open');
 }
@@ -1633,11 +1700,14 @@ function saveProj() {
   const name = document.getElementById('fJName').value.trim();
   if (!name) return;
   const existingSteps = editJId ? (S.projects.find(x=>x.id===editJId)?.steps||[]) : [];
-  const stepTexts = document.getElementById('fJSteps').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  const steps = stepTexts.map(text => {
-    const ex = existingSteps.find(s=>s.text===text);
-    return {text, done:ex?.done||false};
-  });
+  const rows = document.getElementById('fJStepsList').querySelectorAll('.step-row');
+  const steps = Array.from(rows).map(row => {
+    const text = row.querySelector('input[type=text]').value.trim();
+    const date = row.querySelector('input[type=date]').value || undefined;
+    const ex   = existingSteps.find(s => s.text === text);
+    const done = ex ? ex.done : (row.dataset.done === '1');
+    return { text, done, ...(date ? {date} : {}) };
+  }).filter(s => s.text);
   const data = {
     name, client:document.getElementById('fJClient').value,
     desc:document.getElementById('fJDesc').value.trim(),
@@ -1649,7 +1719,7 @@ function saveProj() {
   } else {
     S.projects.push({id:'proj-'+Date.now(),...data});
   }
-  save(); closeProj(); renderProjects();
+  save(); closeProj(); renderAll();
 }
 
 function delProj() {
