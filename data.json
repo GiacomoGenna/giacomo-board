@@ -101,7 +101,8 @@
         },
         {
           "text": "Page d'optin → deadline 3 avril",
-          "done": false
+          "done": false,
+          "date": "2026-04-03"
         },
         {
           "text": "Refaire tunnel : promesse à retravailler + branding visuel",
