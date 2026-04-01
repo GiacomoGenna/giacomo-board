@@ -139,7 +139,8 @@
       "steps": [
         {
           "text": "Finaliser séquence mail Académie post inscription",
-          "done": false
+          "done": false,
+          "date": "2026-04-03"
         },
         {
           "text": "Brancher les emails du lancement 2024 / suite post VSL (à chercher)",
@@ -147,11 +148,13 @@
         },
         {
           "text": "Changer l'image de la page de garde",
-          "done": false
+          "done": false,
+          "date": "2026-04-03"
         },
         {
           "text": "A/B test avec accroche différente (celle de Nina)",
-          "done": false
+          "done": false,
+          "date": "2026-04-03"
         }
       ]
     },
