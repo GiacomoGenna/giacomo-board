@@ -110,6 +110,14 @@
       "deadline": "",
       "priority": 2,
       "done": false
+    },
+    {
+      "id": "p-1775721754847",
+      "done": false,
+      "text": "Mettre à jour date RDV DBS MAI page de capture + email",
+      "client": "nina",
+      "deadline": "2026-04-16",
+      "priority": 2
     }
   ],
   "projects": [
