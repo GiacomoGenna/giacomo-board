@@ -393,6 +393,14 @@
       "day": 2,
       "badge": "linkedin",
       "priority": 2
+    },
+    {
+      "id": "r-1775887090987",
+      "text": "Capture Académie / VSL - AB test - Faire le point",
+      "client": "nina",
+      "day": 0,
+      "badge": "validation",
+      "priority": 2
     }
   ],
   "clients": [
