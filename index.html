@@ -1688,7 +1688,17 @@ function onPonctToggle(id) {
 
 function onStepToggle(projId, i) {
   const p = S.projects.find(x=>x.id===projId);
-  if (p?.steps[i]) { p.steps[i].done=!p.steps[i].done; save(); renderAll(); }
+  if (!p?.steps[i]) return;
+  const s = p.steps[i];
+  s.done = !s.done;
+  if (s.done) {
+    lastToggle = null;
+    showTimeToast(s.text, s.duration || 0, p.client);
+  } else {
+    toastPending = null;
+    document.getElementById('toastUndo').classList.remove('show');
+  }
+  save(); renderAll();
 }
 
 // ── PONCTUAL MODAL ──
