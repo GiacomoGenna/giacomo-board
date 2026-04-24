@@ -582,6 +582,12 @@
       "client": "nina",
       "minutes": 390,
       "label": "Page de vente Alchimiste - relift"
+    },
+    {
+      "date": "2026-04-05",
+      "client": "nina",
+      "minutes": 90,
+      "label": "Emailing S1"
     }
   ]
 }
