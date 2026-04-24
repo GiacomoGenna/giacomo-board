@@ -278,14 +278,6 @@
       "altBase": "2026-03-23"
     },
     {
-      "id": "r-nin-li1",
-      "day": 1,
-      "client": "nina",
-      "priority": 3,
-      "badge": "write",
-      "text": "Post LinkedIn MARDI Nina #1"
-    },
-    {
       "id": "r-nin-pro",
       "day": 3,
       "client": "nina",
