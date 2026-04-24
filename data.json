@@ -178,6 +178,15 @@
       "priority": 2,
       "deadline": "",
       "duration": 30
+    },
+    {
+      "id": "p-1777058189286",
+      "text": "Faire la fiche google business",
+      "client": "pasta",
+      "done": false,
+      "priority": 2,
+      "deadline": "",
+      "duration": 30
     }
   ],
   "projects": [
@@ -505,5 +514,6 @@
       "color": "#f87171",
       "work": "Side business Pasta."
     }
-  ]
+  ],
+  "timeLog": []
 }
