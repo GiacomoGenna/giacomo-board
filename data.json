@@ -294,7 +294,7 @@
       "steps": [
         {
           "text": "Refaire page de paiement / Replay / check page de vente",
-          "done": true,
+          "done": false,
           "duration": 150
         }
       ]
