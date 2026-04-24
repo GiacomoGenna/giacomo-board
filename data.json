@@ -149,7 +149,7 @@
       "steps": [
         {
           "text": "Dupliquer la page de Hugo + rentrer les infos Alchimiste",
-          "done": false
+          "done": true
         },
         {
           "text": "Page d'optin → deadline 3 avril",
