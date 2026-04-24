@@ -341,8 +341,9 @@
       "day": 2,
       "client": "christian",
       "priority": 3,
-      "badge": "write",
-      "text": "Post LinkedIn JEUDI pour Christian"
+      "badge": "linkedin",
+      "text": "Rédiger et envoyer Post LinkedIn JEUDI pour Christian",
+      "duration": 30
     },
     {
       "id": "r-seb-jeu-wrt",
