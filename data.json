@@ -563,6 +563,12 @@
       "client": "christian",
       "minutes": 30,
       "label": "Envoyer post LinkedIn JEUDI à Christian"
+    },
+    {
+      "date": "2026-04-24",
+      "client": "sebastien",
+      "minutes": 15,
+      "label": "Envoyer post LinkedIn JEUDI à Sébastien"
     }
   ]
 }
