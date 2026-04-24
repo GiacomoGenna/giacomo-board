@@ -556,6 +556,12 @@
       "client": "nina",
       "minutes": 30,
       "label": "Rédiger & envoyer email MERCREDI Nina"
+    },
+    {
+      "date": "2026-04-24",
+      "client": "christian",
+      "minutes": 30,
+      "label": "Envoyer post LinkedIn JEUDI à Christian"
     }
   ]
 }
