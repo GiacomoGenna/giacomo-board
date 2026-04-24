@@ -2190,6 +2190,7 @@ renderAll();
     S = ghData;
     if (!S.recurring) S.recurring = DEFAULT_RECURRING.map(t => ({...t}));
     if (!S.clients)   S.clients   = DEFAULT_CLIENTS.map(c => ({...c}));
+    if (!S.timeLog)   S.timeLog   = [];
     cacheLS();
     ghSha = ghSha; // déjà stocké par ghLoad()
     setSync('synced', 'Synchronisé');
