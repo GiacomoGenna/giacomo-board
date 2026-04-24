@@ -403,14 +403,6 @@
       "text": "Rédiger & envoyer email Nina (vendredi)"
     },
     {
-      "id": "r-chr-lun-wrt",
-      "day": 5,
-      "client": "christian",
-      "priority": 3,
-      "badge": "write",
-      "text": "Post LinkedIn LUNDI pour Christian"
-    },
-    {
       "id": "r-seb-mar-wrt5",
       "day": 5,
       "client": "sebastien",
