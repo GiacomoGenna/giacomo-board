@@ -102,7 +102,8 @@
     "r-elo-wrt__2026-04-22": true,
     "r-elo-val__2026-04-23": true,
     "r-nin-mon-email__2026-04-20": true,
-    "r-1777040657998__2026-04-20": true
+    "r-1777040657998__2026-04-20": true,
+    "r-chr-jeu-wrt__2026-04-21": true
   },
   "ponctual": [
     {
@@ -521,6 +522,12 @@
       "client": "nina",
       "minutes": 30,
       "label": "Rédiger & envoyer email LUNDI Nina - Conseil de coach"
+    },
+    {
+      "date": "2026-04-24",
+      "client": "nina",
+      "minutes": 30,
+      "label": "REDIGER Post LinkedIn MARDI Nina #2"
     }
   ]
 }
