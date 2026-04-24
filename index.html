@@ -1946,7 +1946,7 @@ function saveQuickAdd() {
   if (!text) return;
   const client   = document.getElementById('fQClient').value;
   const type     = document.getElementById('fQType').value;
-  const duration = +document.getElementById('fQDuration').value || undefined;
+  const duration = +document.getElementById('fQDuration').value || 0;
   const deadline = document.getElementById('fQDeadline').value || undefined;
   if (type === 'step') {
     const projId = document.getElementById('fQProject').value;
@@ -1959,6 +1959,8 @@ function saveQuickAdd() {
       ...(duration ? {duration} : {})
     });
   }
+  // Log immédiat si durée renseignée
+  if (duration > 0) logTime(client, duration, text);
   save(); closeQuickAdd(); renderAll();
 }
 
@@ -2031,6 +2033,51 @@ document.getElementById('btnDelRecur').onclick    = delRecur;
 document.getElementById('mRecur').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeRecurModal(); });
 
 // ── CLIENTS ──
+function recentEntries(clientId) {
+  const entries = (S.timeLog || [])
+    .map((e, i) => ({...e, _i: i}))
+    .filter(e => e.client === clientId)
+    .slice(-5).reverse();
+  if (!entries.length) return '';
+  const rows = entries.map(e => {
+    const d = new Date(e.date+'T00:00:00');
+    const dl = d.getDate() + ' ' + MONTHS[d.getMonth()];
+    return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px">
+      <span style="color:var(--muted);width:52px;flex-shrink:0">${dl}</span>
+      <span style="flex:1;color:var(--text)">${e.label||'—'}</span>
+      <strong style="color:var(--text);white-space:nowrap">${formatDuration(e.minutes)}</strong>
+      <button onclick="deleteTimeEntry(${e._i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 4px" title="Supprimer">×</button>
+    </div>`;
+  }).join('');
+  return `<div style="padding:6px 18px 10px">${rows}</div>`;
+}
+
+function deleteTimeEntry(idx) {
+  S.timeLog.splice(idx, 1);
+  save(); renderClients();
+}
+
+let addTimeClientId = null;
+function openAddTime(clientId) {
+  addTimeClientId = clientId;
+  const c = S.clients.find(x => x.id === clientId);
+  document.getElementById('mAddTimeTitle').textContent = '⏱ Ajouter du temps — ' + (c?.name || clientId);
+  document.getElementById('fATLabel').value    = '';
+  document.getElementById('fATMinutes').value  = '';
+  document.getElementById('fATDate').value     = ds(TODAY);
+  document.getElementById('mAddTime').classList.add('open');
+  setTimeout(() => document.getElementById('fATLabel').focus(), 50);
+}
+function closeAddTime() { document.getElementById('mAddTime').classList.remove('open'); addTimeClientId = null; }
+function saveAddTime() {
+  const label   = document.getElementById('fATLabel').value.trim();
+  const minutes = +document.getElementById('fATMinutes').value;
+  const date    = document.getElementById('fATDate').value;
+  if (!minutes || minutes <= 0) return;
+  S.timeLog.push({ date: date || ds(TODAY), client: addTimeClientId, minutes, label: label || '—' });
+  save(); closeAddTime(); renderClients();
+}
+
 function renderClients() {
   document.getElementById('tBadgeClients').textContent = S.clients.length;
   const el = document.getElementById('listClients');
@@ -2070,8 +2117,12 @@ function renderClients() {
       <div class="time-row">
         <div class="time-stat">⏱ Cette semaine : <strong>${wLabel}</strong></div>
         <div class="time-stat">📅 Ce mois : <strong>${mLabel}</strong></div>
-        <button onclick="openExport('${c.id}')" style="margin-left:auto;padding:4px 12px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;white-space:nowrap">📄 Exporter</button>
+        <div style="margin-left:auto;display:flex;gap:6px">
+          <button onclick="openAddTime('${c.id}')" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;white-space:nowrap">⏱ Ajouter</button>
+          <button onclick="openExport('${c.id}')" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;white-space:nowrap">📄 Exporter</button>
+        </div>
       </div>
+      ${recentEntries(c.id)}
     </div>`;
   }).join('');
 }
@@ -2266,6 +2317,29 @@ function saveToken() {
 </div>
 
 <button class="fab" onclick="openQuickAdd()" title="Ajouter une tâche rapidement">＋</button>
+
+<!-- MODAL: Ajouter temps -->
+<div class="overlay" id="mAddTime" onclick="if(event.target===this)closeAddTime()">
+  <div class="modal">
+    <h2 id="mAddTimeTitle">⏱ Ajouter du temps</h2>
+    <div class="form-row">
+      <label>Description</label>
+      <input id="fATLabel" type="text" placeholder="Ex : Rédaction page de vente" />
+    </div>
+    <div class="form-row">
+      <label>Durée (min)</label>
+      <input id="fATMinutes" type="number" min="1" max="999" placeholder="Ex : 90" />
+    </div>
+    <div class="form-row">
+      <label>Date</label>
+      <input id="fATDate" type="date" />
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeAddTime()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveAddTime()">Enregistrer</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL: Export temps -->
 <div class="overlay" id="mExport" onclick="if(event.target===this)closeExport()">
