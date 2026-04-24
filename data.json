@@ -284,6 +284,14 @@
           "done": false
         }
       ]
+    },
+    {
+      "id": "proj-1777058288670",
+      "name": "Event 2026",
+      "client": "nina",
+      "desc": "",
+      "deadline": "2026-04-26",
+      "steps": []
     }
   ],
   "recurring": [
