@@ -1908,8 +1908,6 @@ ${entries.length ? `
   closeExport();
 }
 
-document.getElementById('mExport').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeExport(); });
-
 // ── QUICK ADD ──
 function openQuickAdd() {
   document.getElementById('fQText').value     = '';
@@ -2261,7 +2259,7 @@ function saveToken() {
 <button class="fab" onclick="openQuickAdd()" title="Ajouter une tâche rapidement">＋</button>
 
 <!-- MODAL: Export temps -->
-<div class="overlay" id="mExport">
+<div class="overlay" id="mExport" onclick="if(event.target===this)closeExport()">
   <div class="modal">
     <h2 id="mExportTitle">Exporter</h2>
     <div class="form-row">
@@ -2290,7 +2288,7 @@ function saveToken() {
 </div>
 
 <!-- MODAL: Quick Add -->
-<div class="overlay" id="mQuick">
+<div class="overlay" id="mQuick" onclick="if(event.target===this)closeQuickAdd()">
   <div class="modal">
     <h2>⚡ Ajout rapide</h2>
     <div class="form-row">
