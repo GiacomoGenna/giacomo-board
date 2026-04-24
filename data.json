@@ -594,6 +594,12 @@
       "client": "nina",
       "minutes": 120,
       "label": "Emailing S2"
+    },
+    {
+      "date": "2026-04-19",
+      "client": "nina",
+      "minutes": 120,
+      "label": "Emailing S3"
     }
   ]
 }
