@@ -303,11 +303,12 @@
   "recurring": [
     {
       "id": "r-chr-lun-val",
-      "day": 0,
+      "day": 5,
       "client": "christian",
-      "priority": 1,
+      "priority": 2,
       "badge": "validation",
-      "text": "Envoyer post LinkedIn LUNDI à Christian"
+      "text": "Rédiger et envoyer Post LinkedIn JEUDI pour Christian",
+      "duration": 30
     },
     {
       "id": "r-seb-mar-wrt0",
