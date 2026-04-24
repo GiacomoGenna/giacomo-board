@@ -106,7 +106,8 @@
     "r-chr-jeu-wrt__2026-04-21": true,
     "r-seb-jeu-wrt__2026-04-21": true,
     "r-1774425631753__2026-04-21": true,
-    "r-nin-wed-email__2026-04-22": true
+    "r-nin-wed-email__2026-04-22": true,
+    "r-chr-jeu-val__2026-04-22": true
   },
   "ponctual": [
     {
@@ -549,6 +550,12 @@
       "client": "nina",
       "minutes": 15,
       "label": "Post LinkedIn MARDI Nina #1"
+    },
+    {
+      "date": "2026-04-24",
+      "client": "nina",
+      "minutes": 30,
+      "label": "Rédiger & envoyer email MERCREDI Nina"
     }
   ]
 }
