@@ -294,7 +294,7 @@
       "steps": [
         {
           "text": "Refaire page de paiement / Replay / check page de vente",
-          "done": false,
+          "done": true,
           "date": "2026-04-26"
         }
       ]
