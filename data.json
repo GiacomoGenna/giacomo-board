@@ -160,6 +160,15 @@
       "client": "nina",
       "deadline": "2026-04-16",
       "priority": 2
+    },
+    {
+      "id": "p-1777043095577",
+      "text": "Mise en place page google",
+      "client": "pasta",
+      "done": false,
+      "priority": 2,
+      "deadline": "",
+      "duration": 30
     }
   ],
   "projects": [
