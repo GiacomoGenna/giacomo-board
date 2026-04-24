@@ -606,6 +606,12 @@
       "client": "business",
       "minutes": 60,
       "label": "Retravail avec claude code du Board"
+    },
+    {
+      "date": "2026-04-19",
+      "client": "nina",
+      "minutes": 150,
+      "label": "Page de capture Alchimiste"
     }
   ]
 }
