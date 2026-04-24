@@ -1124,24 +1124,32 @@ async function ghSave(data) {
 // STATE
 // ═══════════════════════════════════
 
+function safeLS(key, fallback) {
+  try {
+    const v = localStorage.getItem(key);
+    if (v === null || v === 'undefined' || v === '') return fallback;
+    return JSON.parse(v) ?? fallback;
+  } catch(e) { return fallback; }
+}
+
 function loadLS() {
   return {
-    done:      JSON.parse(localStorage.getItem('gc_done')    || '{}'),
-    ponctual:  JSON.parse(localStorage.getItem('gc_ponct')   || '[]'),
-    projects:  JSON.parse(localStorage.getItem('gc_proj')    || '[]'),
-    recurring: JSON.parse(localStorage.getItem('gc_recur')   || 'null'),
-    clients:   JSON.parse(localStorage.getItem('gc_clients') || 'null'),
-    timeLog:   JSON.parse(localStorage.getItem('gc_timelog') || '[]'),
+    done:      safeLS('gc_done',    {}),
+    ponctual:  safeLS('gc_ponct',   []),
+    projects:  safeLS('gc_proj',    []),
+    recurring: safeLS('gc_recur',   null),
+    clients:   safeLS('gc_clients', null),
+    timeLog:   safeLS('gc_timelog', []),
   };
 }
 
 function cacheLS() {
-  localStorage.setItem('gc_done',    JSON.stringify(S.done));
-  localStorage.setItem('gc_ponct',   JSON.stringify(S.ponctual));
-  localStorage.setItem('gc_proj',    JSON.stringify(S.projects));
-  localStorage.setItem('gc_recur',   JSON.stringify(S.recurring));
-  localStorage.setItem('gc_clients', JSON.stringify(S.clients));
-  localStorage.setItem('gc_timelog', JSON.stringify(S.timeLog));
+  localStorage.setItem('gc_done',    JSON.stringify(S.done      || {}));
+  localStorage.setItem('gc_ponct',   JSON.stringify(S.ponctual  || []));
+  localStorage.setItem('gc_proj',    JSON.stringify(S.projects  || []));
+  localStorage.setItem('gc_recur',   JSON.stringify(S.recurring || []));
+  localStorage.setItem('gc_clients', JSON.stringify(S.clients   || []));
+  localStorage.setItem('gc_timelog', JSON.stringify(S.timeLog   || []));
 }
 
 function save() {
