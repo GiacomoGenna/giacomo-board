@@ -176,7 +176,7 @@
     {
       "id": "proj-nina-funnel",
       "client": "nina",
-      "name": "Alchimiste — Tunnel complet",
+      "name": "Alchimiste - Tunnel complet",
       "desc": "Reconstruction complète du funnel Alchimiste",
       "deadline": "2026-04-30",
       "steps": [
