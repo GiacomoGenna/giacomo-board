@@ -600,6 +600,12 @@
       "client": "nina",
       "minutes": 120,
       "label": "Emailing S3"
+    },
+    {
+      "date": "2026-04-24",
+      "client": "business",
+      "minutes": 60,
+      "label": "Retravail avec claude code du Board"
     }
   ]
 }
