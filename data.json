@@ -511,5 +511,12 @@
       "work": "Side business Pasta."
     }
   ],
-  "timeLog": []
+  "timeLog": [
+    {
+      "date": "2026-04-24",
+      "client": "pasta",
+      "minutes": 60,
+      "label": "Faire la fiche Google"
+    }
+  ]
 }
