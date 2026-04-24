@@ -187,12 +187,12 @@
       "client": "nina",
       "name": "Académie — Lancement",
       "desc": "",
-      "deadline": "2026-04-03",
+      "deadline": "2026-05-03",
       "steps": [
         {
           "text": "Finaliser séquence mail Académie post inscription",
           "done": false,
-          "date": "2026-04-01"
+          "date": "2026-05-03"
         },
         {
           "text": "Brancher les emails du lancement 2024 / suite post VSL (à chercher)",
