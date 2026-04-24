@@ -92,14 +92,8 @@
     "r-1774424542949__2026-04-23": true,
     "r-1774424484466__2026-04-23": true,
     "r-elo-val__2026-04-23": true,
-    "r-seb-jeu-val__2026-04-22": true,
-    "r-chr-jeu-val__2026-04-22": true,
     "r-nin-li2__2026-04-22": true,
-    "r-nin-wed-email__2026-04-22": true,
-    "r-elo-wrt__2026-04-22": true,
     "r-nin-pro__2026-04-22": true,
-    "r-seb-jeu-wrt__2026-04-21": true,
-    "r-chr-jeu-wrt__2026-04-21": true,
     "r-seb-mar-wrt0__2026-04-19": true,
     "r-chr-lun-val__2026-04-19": true,
     "r-1775887090987__2026-04-19": true,
@@ -107,7 +101,8 @@
     "r-seb-mar-wrt5__2026-04-17": true,
     "r-nin-fri-email__2026-04-17": true,
     "r-nin-sat-email__2026-04-18": true,
-    "r-nin-sat-email__2026-04-25": true
+    "r-nin-sat-email__2026-04-25": true,
+    "r-elo-wrt__2026-04-22": true
   },
   "ponctual": [
     {
