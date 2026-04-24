@@ -1793,6 +1793,123 @@ function delProj() {
 
 function onProjEdit(id) { openProj(id); }
 
+// ── EXPORT TEMPS ──
+let exportClientId = null;
+
+function openExport(clientId) {
+  exportClientId = clientId;
+  const c = S.clients.find(x => x.id === clientId);
+  document.getElementById('mExportTitle').textContent = '📄 Exporter — ' + (c?.name || clientId);
+  document.getElementById('fExportPeriod').value = 'week';
+  document.getElementById('fExportCustomRow').style.display = 'none';
+  // Pré-remplir dates custom avec semaine courante
+  const weekStart = new Date(TODAY);
+  weekStart.setDate(TODAY.getDate() - ((TODAY.getDay() + 6) % 7));
+  document.getElementById('fExportStart').value = ds(weekStart);
+  document.getElementById('fExportEnd').value   = ds(TODAY);
+  document.getElementById('mExport').classList.add('open');
+}
+
+function closeExport() { document.getElementById('mExport').classList.remove('open'); exportClientId = null; }
+
+function onExportPeriodChange() {
+  const custom = document.getElementById('fExportPeriod').value === 'custom';
+  document.getElementById('fExportCustomRow').style.display = custom ? 'block' : 'none';
+}
+
+function generateExport() {
+  const c = S.clients.find(x => x.id === exportClientId);
+  if (!c) return;
+
+  const period   = document.getElementById('fExportPeriod').value;
+  const todayStr = ds(TODAY);
+  let startStr, endStr, periodLabel;
+
+  if (period === 'week') {
+    const ws = new Date(TODAY);
+    ws.setDate(TODAY.getDate() - ((TODAY.getDay() + 6) % 7));
+    const we = new Date(ws); we.setDate(ws.getDate() + 6);
+    startStr    = ds(ws); endStr = todayStr;
+    periodLabel = `Semaine du ${ws.getDate()} ${MONTHS[ws.getMonth()]} au ${we.getDate()} ${MONTHS[we.getMonth()]} ${we.getFullYear()}`;
+  } else if (period === 'month') {
+    const ms = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+    startStr    = ds(ms); endStr = todayStr;
+    const mn    = MONTHS[TODAY.getMonth()];
+    periodLabel = mn.charAt(0).toUpperCase() + mn.slice(1) + ' ' + TODAY.getFullYear();
+  } else {
+    startStr = document.getElementById('fExportStart').value;
+    endStr   = document.getElementById('fExportEnd').value;
+    if (!startStr || !endStr) return;
+    const s  = new Date(startStr+'T00:00:00'), e = new Date(endStr+'T00:00:00');
+    periodLabel = `Du ${s.getDate()} ${MONTHS[s.getMonth()]} au ${e.getDate()} ${MONTHS[e.getMonth()]} ${e.getFullYear()}`;
+  }
+
+  const entries = S.timeLog
+    .filter(e => e.client === exportClientId && e.date >= startStr && e.date <= endStr)
+    .sort((a,b) => a.date.localeCompare(b.date));
+
+  const totalMin = entries.reduce((s,e) => s + e.minutes, 0);
+
+  const rows = entries.map(e => {
+    const d        = new Date(e.date+'T00:00:00');
+    const dayLabel = DAY_SHORT[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()];
+    return `<tr>
+      <td class="col-date">${dayLabel}</td>
+      <td class="col-label">${e.label||'—'}</td>
+      <td class="col-dur">${formatDuration(e.minutes)}</td>
+    </tr>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<title>Rapport — ${c.name} — ${periodLabel}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#111;padding:52px;max-width:680px;margin:0 auto}
+  .hd{display:flex;align-items:center;gap:16px;padding-bottom:22px;border-bottom:3px solid ${c.color};margin-bottom:32px}
+  .bar{width:6px;height:52px;background:${c.color};border-radius:3px;flex-shrink:0}
+  h1{font-size:24px;font-weight:700}
+  .period{font-size:14px;color:#777;margin-top:5px}
+  table{width:100%;border-collapse:collapse;margin-bottom:28px}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#999;padding:0 0 10px;border-bottom:1px solid #e5e5e5}
+  th.col-dur{text-align:right}
+  td{padding:11px 0;border-bottom:1px solid #f0f0f0;font-size:14px;vertical-align:top}
+  td.col-date{color:#888;white-space:nowrap;width:130px}
+  td.col-dur{text-align:right;white-space:nowrap;width:70px;font-weight:600}
+  .total{display:flex;justify-content:flex-end;align-items:baseline;gap:14px;padding:16px 0 0;border-top:2px solid #111}
+  .total-lbl{font-size:13px;color:#888;text-transform:uppercase;letter-spacing:.06em}
+  .total-val{font-size:20px;font-weight:700;color:${c.color}}
+  .empty{color:#bbb;font-style:italic;text-align:center;padding:40px 0}
+  .print-btn{display:block;margin:40px auto 0;padding:11px 32px;background:${c.color};color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+  @media print{.print-btn{display:none}body{padding:28px}}
+</style>
+</head>
+<body>
+<div class="hd">
+  <div class="bar"></div>
+  <div><h1>${c.name}</h1><div class="period">${periodLabel}</div></div>
+</div>
+${entries.length ? `
+<table>
+  <thead><tr><th>Date</th><th>Tâche</th><th class="col-dur">Durée</th></tr></thead>
+  <tbody>${rows}</tbody>
+</table>
+<div class="total">
+  <span class="total-lbl">Total</span>
+  <span class="total-val">${formatDuration(totalMin) || '0min'}</span>
+</div>` : '<div class="empty">Aucune entrée de temps pour cette période.</div>'}
+<button class="print-btn" onclick="window.print()">🖨&nbsp; Imprimer / Enregistrer en PDF</button>
+</body></html>`;
+
+  const w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+  closeExport();
+}
+
+document.getElementById('mExport').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeExport(); });
+
 // ── QUICK ADD ──
 function openQuickAdd() {
   document.getElementById('fQText').value     = '';
@@ -1947,6 +2064,7 @@ function renderClients() {
       <div class="time-row">
         <div class="time-stat">⏱ Cette semaine : <strong>${wLabel}</strong></div>
         <div class="time-stat">📅 Ce mois : <strong>${mLabel}</strong></div>
+        <button onclick="openExport('${c.id}')" style="margin-left:auto;padding:4px 12px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;white-space:nowrap">📄 Exporter</button>
       </div>
     </div>`;
   }).join('');
@@ -2141,6 +2259,35 @@ function saveToken() {
 </div>
 
 <button class="fab" onclick="openQuickAdd()" title="Ajouter une tâche rapidement">＋</button>
+
+<!-- MODAL: Export temps -->
+<div class="overlay" id="mExport">
+  <div class="modal">
+    <h2 id="mExportTitle">Exporter</h2>
+    <div class="form-row">
+      <label>Période</label>
+      <select id="fExportPeriod" onchange="onExportPeriodChange()">
+        <option value="week">Cette semaine</option>
+        <option value="month">Ce mois</option>
+        <option value="custom">Personnalisé</option>
+      </select>
+    </div>
+    <div id="fExportCustomRow" style="display:none">
+      <div class="form-row">
+        <label>Du</label>
+        <input id="fExportStart" type="date" />
+      </div>
+      <div class="form-row">
+        <label>Au</label>
+        <input id="fExportEnd" type="date" />
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeExport()">Annuler</button>
+      <button class="btn btn-primary" onclick="generateExport()">📄 Générer le rapport</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL: Quick Add -->
 <div class="overlay" id="mQuick">
