@@ -272,6 +272,20 @@
       cursor: pointer;
     }
     .toast-undo:hover { opacity: .85; }
+    .toast-time { display: flex; align-items: center; gap: 5px; }
+    .toast-time input { width: 50px; background: var(--s2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 13px; padding: 4px 6px; text-align: center; -moz-appearance: textfield; }
+    .toast-time input::-webkit-inner-spin-button { display: none; }
+    .toast-confirm { background: #22c55e; color: #fff; border: none; border-radius: 6px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .toast-confirm:hover { opacity: .85; }
+
+    /* FAB */
+    .fab { position: fixed; bottom: 28px; right: 28px; width: 52px; height: 52px; border-radius: 50%; background: var(--accent); border: none; color: #fff; font-size: 28px; font-weight: 300; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,.45); z-index: 1000; display: flex; align-items: center; justify-content: center; transition: transform .15s, box-shadow .15s; line-height: 1; }
+    .fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(0,0,0,.55); }
+
+    /* Client time stats */
+    .time-row { display: flex; gap: 16px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .time-stat { font-size: 12px; color: var(--muted); }
+    .time-stat strong { color: var(--text); font-weight: 600; }
 
     .chip {
       font-size: 11px;
@@ -761,6 +775,10 @@
         <option value="3">🟢 Flexible</option>
       </select>
     </div>
+    <div class="form-row">
+      <label>Durée estimée (min)</label>
+      <input id="fPDuration" type="number" min="0" max="999" placeholder="Ex : 30" />
+    </div>
     <div class="form-actions">
       <button class="btn btn-danger" id="btnDelPonct" style="display:none">Supprimer</button>
       <button class="btn btn-secondary" id="btnCancelPonct">Annuler</button>
@@ -902,6 +920,10 @@
         <input id="fRAltBase" type="date" />
       </div>
     </div>
+    <div class="form-row">
+      <label>Durée habituelle (min)</label>
+      <input id="fRDuration" type="number" min="0" max="999" placeholder="Ex : 30" />
+    </div>
     <div class="form-actions">
       <button class="btn btn-danger" id="btnDelRecur" style="display:none">Supprimer</button>
       <button class="btn btn-secondary" id="btnCancelRecur">Annuler</button>
@@ -941,7 +963,7 @@ function populateClientSelects() {
   const opts    = S.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
   const allOpts = '<option value="">Tous les clients</option>' + opts;
   // Form selects (sans "tous")
-  ['fPClient','fJClient','fRClient'].forEach(id => {
+  ['fPClient','fJClient','fRClient','fQClient'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     const cur = el.value;
@@ -1109,6 +1131,7 @@ function loadLS() {
     projects:  JSON.parse(localStorage.getItem('gc_proj')    || '[]'),
     recurring: JSON.parse(localStorage.getItem('gc_recur')   || 'null'),
     clients:   JSON.parse(localStorage.getItem('gc_clients') || 'null'),
+    timeLog:   JSON.parse(localStorage.getItem('gc_timelog') || '[]'),
   };
 }
 
@@ -1118,6 +1141,7 @@ function cacheLS() {
   localStorage.setItem('gc_proj',    JSON.stringify(S.projects));
   localStorage.setItem('gc_recur',   JSON.stringify(S.recurring));
   localStorage.setItem('gc_clients', JSON.stringify(S.clients));
+  localStorage.setItem('gc_timelog', JSON.stringify(S.timeLog));
 }
 
 function save() {
@@ -1133,6 +1157,7 @@ function save() {
 let S = loadLS();
 if (!S.recurring) S.recurring = DEFAULT_RECURRING.map(t => ({...t}));
 if (!S.clients)   S.clients   = DEFAULT_CLIENTS.map(c => ({...c}));
+if (!S.timeLog)   S.timeLog   = [];
 rebuildClientsMap();
 
 // Seed default projects on first load
@@ -1569,23 +1594,50 @@ function renderAll() {
 // EVENT HANDLERS
 // ═══════════════════════════════════
 
-// ── TOAST ANNULER ──
-let toastTimer = null;
-let lastToggle = null; // { taskId, date }
+// ── TIME HELPERS ──
+function formatDuration(min) {
+  if (!min || min <= 0) return '';
+  if (min < 60) return min + 'min';
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return m ? `${h}h${String(m).padStart(2,'0')}` : `${h}h`;
+}
 
-function showToast(taskText) {
-  lastToggle && clearTimeout(toastTimer);
-  document.getElementById('toastMsg').textContent = '✓ ' + taskText.slice(0, 50) + (taskText.length > 50 ? '…' : '');
-  const t = document.getElementById('toastUndo');
-  t.classList.add('show');
-  toastTimer = setTimeout(() => { t.classList.remove('show'); lastToggle = null; }, 5000);
+function logTime(client, minutes, label) {
+  if (!minutes || minutes <= 0) return;
+  S.timeLog.push({ date: ds(TODAY), client, minutes: +minutes, label: label || '' });
+  save();
+}
+
+// ── TOAST ANNULER + TEMPS ──
+let toastTimer        = null;
+let lastToggle        = null; // { taskId, date }
+let toastPending      = null; // { client, label } for time logging
+
+function showTimeToast(taskText, defaultMin, client) {
+  clearTimeout(toastTimer);
+  document.getElementById('toastMsg').textContent = '✓ ' + taskText.slice(0, 40) + (taskText.length > 40 ? '…' : '');
+  document.getElementById('toastTimeInput').value = defaultMin || '';
+  toastPending = { client, label: taskText };
+  document.getElementById('toastUndo').classList.add('show');
+  toastTimer = setTimeout(() => confirmTimeToast(), 10000);
+}
+
+function confirmTimeToast() {
+  clearTimeout(toastTimer);
+  const min = +document.getElementById('toastTimeInput').value;
+  if (toastPending && min > 0) logTime(toastPending.client, min, toastPending.label);
+  toastPending = null;
+  lastToggle   = null;
+  document.getElementById('toastUndo').classList.remove('show');
 }
 
 function undoLastToggle() {
   if (!lastToggle) return;
   clearTimeout(toastTimer);
   toggle(lastToggle.taskId, lastToggle.date);
-  lastToggle = null;
+  lastToggle   = null;
+  toastPending = null;
   document.getElementById('toastUndo').classList.remove('show');
   save(); renderAll();
 }
@@ -1595,12 +1647,12 @@ function onRecurringClick(el) {
   const date   = new Date(el.dataset.date + 'T00:00:00');
   const task   = S.recurring.find(t => t.id === taskId);
   toggle(taskId, date);
-  // Stocker pour undo seulement si on vient de cocher (pas décocher)
   if (isDone(taskId, date)) {
     lastToggle = { taskId, date };
-    showToast(task ? getTaskText(task, date) : taskId);
+    showTimeToast(task ? getTaskText(task, date) : taskId, task?.duration || 0, task?.client || 'business');
   } else {
-    lastToggle = null;
+    lastToggle   = null;
+    toastPending = null;
     document.getElementById('toastUndo').classList.remove('show');
   }
   save(); renderAll();
@@ -1614,7 +1666,16 @@ function onChipClick(taskId, dateStr) {
 
 function onPonctToggle(id) {
   const t = S.ponctual.find(x=>x.id===id);
-  if (t) { t.done=!t.done; save(); renderAll(); }
+  if (!t) return;
+  t.done = !t.done;
+  if (t.done) {
+    lastToggle = null;
+    showTimeToast(t.text, t.duration || 0, t.client);
+  } else {
+    toastPending = null;
+    document.getElementById('toastUndo').classList.remove('show');
+  }
+  save(); renderAll();
 }
 
 function onStepToggle(projId, i) {
@@ -1631,8 +1692,9 @@ function openPonct(id=null) {
   document.getElementById('mPonctTitle').textContent = id ? 'Modifier la tâche' : 'Nouvelle tâche ponctuelle';
   document.getElementById('fPText').value   = t?.text||'';
   document.getElementById('fPClient').value = t?.client||'business';
-  document.getElementById('fPDate').value   = t?.deadline||'';
-  document.getElementById('fPPrio').value   = t?.priority||'2';
+  document.getElementById('fPDate').value     = t?.deadline||'';
+  document.getElementById('fPPrio').value     = t?.priority||'2';
+  document.getElementById('fPDuration').value = t?.duration||'';
   document.getElementById('btnDelPonct').style.display = id?'block':'none';
   document.getElementById('mPonct').classList.add('open');
   setTimeout(()=>document.getElementById('fPText').focus(),50);
@@ -1647,6 +1709,7 @@ function savePonct() {
     text, client:document.getElementById('fPClient').value,
     deadline:document.getElementById('fPDate').value,
     priority:+document.getElementById('fPPrio').value,
+    duration:+document.getElementById('fPDuration').value || undefined,
   };
   if (editPId) {
     const i = S.ponctual.findIndex(x=>x.id===editPId);
@@ -1730,6 +1793,52 @@ function delProj() {
 
 function onProjEdit(id) { openProj(id); }
 
+// ── QUICK ADD ──
+function openQuickAdd() {
+  document.getElementById('fQText').value     = '';
+  document.getElementById('fQType').value     = 'ponctual';
+  document.getElementById('fQDuration').value = '';
+  document.getElementById('fQDeadline').value = '';
+  document.getElementById('fQProjectRow').style.display  = 'none';
+  document.getElementById('fQDeadlineRow').style.display = 'block';
+  // Populate project select
+  const pSel = document.getElementById('fQProject');
+  pSel.innerHTML = S.projects.map(p =>
+    `<option value="${p.id}">${p.name}${CLIENTS[p.client]?' ('+CLIENTS[p.client].name+')':''}</option>`
+  ).join('') || '<option value="">Aucun projet</option>';
+  document.getElementById('mQuick').classList.add('open');
+  setTimeout(() => document.getElementById('fQText').focus(), 50);
+}
+
+function closeQuickAdd() { document.getElementById('mQuick').classList.remove('open'); }
+
+function onQuickTypeChange() {
+  const type = document.getElementById('fQType').value;
+  document.getElementById('fQProjectRow').style.display  = type === 'step'     ? 'block' : 'none';
+  document.getElementById('fQDeadlineRow').style.display = type === 'ponctual' ? 'block' : 'none';
+}
+
+function saveQuickAdd() {
+  const text     = document.getElementById('fQText').value.trim();
+  if (!text) return;
+  const client   = document.getElementById('fQClient').value;
+  const type     = document.getElementById('fQType').value;
+  const duration = +document.getElementById('fQDuration').value || undefined;
+  const deadline = document.getElementById('fQDeadline').value || undefined;
+  if (type === 'step') {
+    const projId = document.getElementById('fQProject').value;
+    const p = S.projects.find(x => x.id === projId);
+    if (p) p.steps.push({ text, done: false, ...(duration ? {duration} : {}) });
+  } else {
+    S.ponctual.push({
+      id: 'p-' + Date.now(), text, client, done: false, priority: 2,
+      deadline: deadline || '',
+      ...(duration ? {duration} : {})
+    });
+  }
+  save(); closeQuickAdd(); renderAll();
+}
+
 // ── RECURRING MODAL ──
 let editRId = null;
 
@@ -1746,6 +1855,7 @@ function openRecurModal(id, e) {
   document.getElementById('fRAlternating').checked = !!t?.alternating;
   document.getElementById('fRTextAlt').value     = t?.textAlt || '';
   document.getElementById('fRAltBase').value     = t?.altBase || '';
+  document.getElementById('fRDuration').value    = t?.duration || '';
   document.getElementById('altFields').classList.toggle('visible', !!t?.alternating);
   document.getElementById('btnDelRecur').style.display = id ? 'block' : 'none';
   document.getElementById('mRecur').classList.add('open');
@@ -1775,6 +1885,7 @@ function saveRecur() {
     alternating: isAlt || undefined,
     textAlt:  isAlt ? document.getElementById('fRTextAlt').value.trim() : undefined,
     altBase:  isAlt ? document.getElementById('fRAltBase').value : undefined,
+    duration: +document.getElementById('fRDuration').value || undefined,
   };
   if (editRId) {
     const i = S.recurring.findIndex(x=>x.id===editRId);
@@ -1804,7 +1915,19 @@ function renderClients() {
     el.innerHTML = '<div class="empty">Aucun client — clique sur ＋ pour en ajouter.</div>';
     return;
   }
-  el.innerHTML = S.clients.map(c => `
+  // Calcul des bornes semaine / mois
+  const weekStart = new Date(TODAY);
+  weekStart.setDate(TODAY.getDate() - ((TODAY.getDay() + 6) % 7));
+  const weekStartStr  = ds(weekStart);
+  const monthStartStr = ds(new Date(TODAY.getFullYear(), TODAY.getMonth(), 1));
+  const todayStr      = ds(TODAY);
+
+  el.innerHTML = S.clients.map(c => {
+    const weekMin  = S.timeLog.filter(e => e.client===c.id && e.date>=weekStartStr  && e.date<=todayStr).reduce((s,e)=>s+e.minutes,0);
+    const monthMin = S.timeLog.filter(e => e.client===c.id && e.date>=monthStartStr && e.date<=todayStr).reduce((s,e)=>s+e.minutes,0);
+    const wLabel   = formatDuration(weekMin)  || '—';
+    const mLabel   = formatDuration(monthMin) || '—';
+    return `
     <div class="client-card">
       <div class="client-card-header">
         <div class="client-card-name">
@@ -1821,8 +1944,12 @@ function renderClients() {
         <span style="color:var(--border)">·</span>
         <span class="stat-link" onclick="switchTab('projects','${c.id}')">${S.projects.filter(p=>p.client===c.id).length} projet(s) long terme</span>
       </div>
-    </div>
-  `).join('');
+      <div class="time-row">
+        <div class="time-stat">⏱ Cette semaine : <strong>${wLabel}</strong></div>
+        <div class="time-stat">📅 Ce mois : <strong>${mLabel}</strong></div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 let editCId = null;
@@ -2004,7 +2131,53 @@ function saveToken() {
 <!-- TOAST ANNULER -->
 <div class="toast" id="toastUndo">
   <span id="toastMsg">Tâche cochée</span>
+  <div class="toast-time">
+    <span style="font-size:12px;color:var(--muted)">⏱</span>
+    <input type="number" id="toastTimeInput" min="0" max="999" placeholder="–" />
+    <span style="font-size:12px;color:var(--muted)">min</span>
+  </div>
+  <button class="toast-confirm" onclick="confirmTimeToast()">✓ Valider</button>
   <button class="toast-undo" onclick="undoLastToggle()">Annuler</button>
+</div>
+
+<button class="fab" onclick="openQuickAdd()" title="Ajouter une tâche rapidement">＋</button>
+
+<!-- MODAL: Quick Add -->
+<div class="overlay" id="mQuick">
+  <div class="modal">
+    <h2>⚡ Ajout rapide</h2>
+    <div class="form-row">
+      <label>Tâche</label>
+      <input id="fQText" type="text" placeholder="Que dois-tu faire ?" />
+    </div>
+    <div class="form-row">
+      <label>Client</label>
+      <select id="fQClient"></select>
+    </div>
+    <div class="form-row">
+      <label>Type</label>
+      <select id="fQType" onchange="onQuickTypeChange()">
+        <option value="ponctual">Tâche ponctuelle</option>
+        <option value="step">Étape d'un projet existant</option>
+      </select>
+    </div>
+    <div class="form-row" id="fQProjectRow" style="display:none">
+      <label>Projet</label>
+      <select id="fQProject"></select>
+    </div>
+    <div class="form-row">
+      <label>Durée estimée (min)</label>
+      <input id="fQDuration" type="number" min="0" max="999" placeholder="Ex : 30" />
+    </div>
+    <div class="form-row" id="fQDeadlineRow">
+      <label>Deadline (optionnel)</label>
+      <input id="fQDeadline" type="date" />
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeQuickAdd()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveQuickAdd()">Ajouter</button>
+    </div>
+  </div>
 </div>
 
 </body>
