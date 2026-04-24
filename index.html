@@ -2055,11 +2055,33 @@ function recentEntries(clientId) {
     return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px">
       <span style="color:var(--muted);width:52px;flex-shrink:0">${dl}</span>
       <span style="flex:1;color:var(--text)">${e.label||'—'}</span>
-      <strong style="color:var(--text);white-space:nowrap">${formatDuration(e.minutes)}</strong>
+      <span onclick="editTimeEntry(this,${e._i})" title="Cliquer pour modifier"
+        style="color:var(--text);font-weight:600;white-space:nowrap;cursor:pointer;padding:2px 6px;border-radius:5px;border:1px solid transparent"
+        onmouseover="this.style.borderColor='var(--border)'" onmouseout="this.style.borderColor='transparent'"
+      >${formatDuration(e.minutes)}</span>
       <button onclick="deleteTimeEntry(${e._i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 4px" title="Supprimer">×</button>
     </div>`;
   }).join('');
   return `<div style="padding:6px 18px 10px">${rows}</div>`;
+}
+
+function editTimeEntry(el, idx) {
+  const entry = S.timeLog[idx];
+  if (!entry) return;
+  const input = document.createElement('input');
+  input.type = 'number'; input.min = 1; input.max = 999;
+  input.value = entry.minutes;
+  input.style.cssText = 'width:52px;background:var(--s2);border:1px solid var(--accent);border-radius:5px;color:var(--text);font-size:12px;font-weight:600;padding:2px 6px;text-align:center;-moz-appearance:textfield';
+  el.replaceWith(input);
+  input.focus(); input.select();
+  const commit = () => {
+    const v = +input.value;
+    if (v > 0) { S.timeLog[idx].minutes = v; save(); }
+    renderClients();
+  };
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') renderClients(); });
+  input.addEventListener('click', e => e.stopPropagation());
 }
 
 function deleteTimeEntry(idx) {
