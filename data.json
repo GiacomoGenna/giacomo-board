@@ -412,6 +412,14 @@
       "day": 0,
       "badge": "validation",
       "priority": 2
+    },
+    {
+      "id": "r-1777040657998",
+      "text": "REDIGER Post LinkedIn MARDI Nina #2",
+      "client": "nina",
+      "day": 1,
+      "badge": "write",
+      "priority": 2
     }
   ],
   "clients": [
