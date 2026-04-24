@@ -103,7 +103,8 @@
     "r-elo-val__2026-04-23": true,
     "r-nin-mon-email__2026-04-20": true,
     "r-1777040657998__2026-04-20": true,
-    "r-chr-jeu-wrt__2026-04-21": true
+    "r-chr-jeu-wrt__2026-04-21": true,
+    "r-seb-jeu-wrt__2026-04-21": true
   },
   "ponctual": [
     {
@@ -528,6 +529,12 @@
       "client": "nina",
       "minutes": 30,
       "label": "REDIGER Post LinkedIn MARDI Nina #2"
+    },
+    {
+      "date": "2026-04-24",
+      "client": "christian",
+      "minutes": 30,
+      "label": "Post LinkedIn JEUDI pour Christian"
     }
   ]
 }
