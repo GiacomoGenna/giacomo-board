@@ -170,6 +170,15 @@
       "priority": 2,
       "deadline": "",
       "duration": 30
+    },
+    {
+      "id": "p-1777213411790",
+      "text": "Changer le workflow Prospect Alchimiste. Désinscrire des autres campagnes si inscription ici",
+      "client": "nina",
+      "done": false,
+      "priority": 2,
+      "deadline": "2026-05-03",
+      "duration": 30
     }
   ],
   "projects": [
@@ -612,6 +621,12 @@
       "client": "nina",
       "minutes": 150,
       "label": "Page de capture Alchimiste"
+    },
+    {
+      "date": "2026-04-26",
+      "client": "nina",
+      "minutes": 30,
+      "label": "Changer le workflow Prospect Alchimiste. Désinscrire des autres campagnes si inscription ici"
     }
   ]
 }
