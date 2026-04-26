@@ -628,6 +628,12 @@
       "client": "nina",
       "minutes": 30,
       "label": "Changer le workflow Prospect Alchimiste. Désinscrire des autres campagnes si inscription ici"
+    },
+    {
+      "date": "2026-04-26",
+      "client": "sebastien",
+      "minutes": 45,
+      "label": "Post LinkedIn MARDI pour Sébastien"
     }
   ]
 }
