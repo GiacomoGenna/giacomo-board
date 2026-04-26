@@ -177,7 +177,7 @@
       "id": "p-1777213411790",
       "text": "Changer le workflow Prospect Alchimiste. Désinscrire des autres campagnes si inscription ici",
       "client": "nina",
-      "done": false,
+      "done": true,
       "priority": 2,
       "deadline": "2026-05-03",
       "duration": 30
