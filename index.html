@@ -1928,10 +1928,11 @@ ${entries.length ? `
 
 // ── QUICK ADD ──
 function openQuickAdd() {
-  document.getElementById('fQText').value     = '';
-  document.getElementById('fQType').value     = 'ponctual';
-  document.getElementById('fQDuration').value = '';
-  document.getElementById('fQDeadline').value = '';
+  document.getElementById('fQText').value          = '';
+  document.getElementById('fQType').value           = 'ponctual';
+  document.getElementById('fQDuration').value       = '';
+  document.getElementById('fQDeadline').value       = '';
+  document.getElementById('fQAlreadyDone').checked  = false;
   document.getElementById('fQProjectRow').style.display  = 'none';
   document.getElementById('fQDeadlineRow').style.display = 'block';
   // Populate project select
@@ -1969,8 +1970,9 @@ function saveQuickAdd() {
       ...(duration ? {duration} : {})
     });
   }
-  // Log immédiat si durée renseignée
-  if (duration > 0) logTime(client, duration, text);
+  // Log immédiat seulement si "déjà effectué" est coché
+  const alreadyDone = document.getElementById('fQAlreadyDone').checked;
+  if (alreadyDone && duration > 0) logTime(client, duration, text);
   save(); closeQuickAdd(); renderAll();
 }
 
@@ -2432,6 +2434,12 @@ function saveToken() {
     <div class="form-row" id="fQDeadlineRow">
       <label>Deadline (optionnel)</label>
       <input id="fQDeadline" type="date" />
+    </div>
+    <div class="form-row">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:13px;font-weight:500;cursor:pointer">
+        <input type="checkbox" id="fQAlreadyDone" style="width:auto" />
+        Travail déjà effectué (loger le temps maintenant)
+      </label>
     </div>
     <div class="form-actions">
       <button class="btn btn-secondary" onclick="closeQuickAdd()">Annuler</button>
