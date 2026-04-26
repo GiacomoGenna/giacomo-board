@@ -641,6 +641,12 @@
       "client": "sebastien",
       "minutes": 5,
       "label": "Envoyer post LinkedIn MARDI à Sébastien"
+    },
+    {
+      "date": "2026-04-26",
+      "client": "nina",
+      "minutes": 90,
+      "label": "Refaire proposition AB test selon retour Elodie"
     }
   ]
 }
