@@ -635,6 +635,12 @@
       "client": "sebastien",
       "minutes": 45,
       "label": "Post LinkedIn MARDI pour Sébastien"
+    },
+    {
+      "date": "2026-04-26",
+      "client": "sebastien",
+      "minutes": 5,
+      "label": "Envoyer post LinkedIn MARDI à Sébastien"
     }
   ]
 }
