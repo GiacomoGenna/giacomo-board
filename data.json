@@ -362,14 +362,6 @@
       "duration": 30
     },
     {
-      "id": "r-seb-jeu-wrt",
-      "day": 2,
-      "client": "sebastien",
-      "priority": 3,
-      "badge": "write",
-      "text": "Post LinkedIn JEUDI pour Sébastien"
-    },
-    {
       "id": "r-seb-jeu-val",
       "day": 3,
       "client": "sebastien",
