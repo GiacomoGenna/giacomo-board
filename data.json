@@ -641,6 +641,12 @@
       "client": "nina",
       "minutes": 90,
       "label": "Refaire proposition AB test selon retour Elodie"
+    },
+    {
+      "date": "2026-04-27",
+      "client": "nina",
+      "minutes": 90,
+      "label": "Analyse data funnel académie"
     }
   ]
 }
