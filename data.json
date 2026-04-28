@@ -648,6 +648,12 @@
       "client": "nina",
       "minutes": 90,
       "label": "Analyse data funnel académie"
+    },
+    {
+      "date": "2026-04-28",
+      "client": "christian",
+      "minutes": 30,
+      "label": "Rédiger et envoyer Post LinkedIn LUNDI pour Christian"
     }
   ]
 }
