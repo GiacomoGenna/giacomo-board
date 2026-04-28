@@ -326,14 +326,6 @@
       "duration": 30
     },
     {
-      "id": "r-seb-mar-wrt0",
-      "day": 0,
-      "client": "sebastien",
-      "priority": 1,
-      "badge": "validation",
-      "text": "Envoyer post LinkedIn MARDI à Sébastien"
-    },
-    {
       "id": "r-nin-mon-email",
       "day": 1,
       "client": "nina",
