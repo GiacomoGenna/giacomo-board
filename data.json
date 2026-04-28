@@ -362,14 +362,6 @@
       "duration": 30
     },
     {
-      "id": "r-seb-jeu-val",
-      "day": 3,
-      "client": "sebastien",
-      "priority": 1,
-      "badge": "validation",
-      "text": "Envoyer post LinkedIn JEUDI à Sébastien"
-    },
-    {
       "id": "r-elo-wrt",
       "day": 3,
       "client": "elodie",
