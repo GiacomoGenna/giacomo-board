@@ -660,6 +660,12 @@
       "client": "elodie",
       "minutes": 30,
       "label": "Rédiger l'email de la semaine pour Élodie"
+    },
+    {
+      "date": "2026-04-30",
+      "client": "nina",
+      "minutes": 30,
+      "label": "Rédiger & envoyer email MERCREDI Nina"
     }
   ]
 }
