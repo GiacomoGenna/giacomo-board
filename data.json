@@ -646,6 +646,12 @@
       "client": "christian",
       "minutes": 30,
       "label": "Rédiger et envoyer Post LinkedIn JEUDI pour Christian"
+    },
+    {
+      "date": "2026-04-30",
+      "client": "nina",
+      "minutes": 45,
+      "label": "Email PRO JEUDI Nina"
     }
   ]
 }
