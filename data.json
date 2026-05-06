@@ -128,7 +128,8 @@
     "r-elo-val__2026-04-30": true,
     "r-1774424484466__2026-04-30": true,
     "r-chr-lun-val__2026-05-01": true,
-    "r-nin-fri-email__2026-05-01": true
+    "r-nin-fri-email__2026-05-01": true,
+    "r-nin-sat-email__2026-05-02": true
   },
   "ponctual": [
     {
@@ -678,6 +679,12 @@
       "client": "christian",
       "minutes": 30,
       "label": "Rédiger et envoyer Post LinkedIn LUNDI pour Christian"
+    },
+    {
+      "date": "2026-05-06",
+      "client": "nina",
+      "minutes": 30,
+      "label": "Rédiger & envoyer email Nina (vendredi)"
     }
   ]
 }
