@@ -685,6 +685,12 @@
       "client": "nina",
       "minutes": 30,
       "label": "Rédiger & envoyer email Nina (vendredi)"
+    },
+    {
+      "date": "2026-05-06",
+      "client": "nina",
+      "minutes": 30,
+      "label": "Rédiger & envoyer email SAMEDI Nina - Vidéo YouTube"
     }
   ]
 }
