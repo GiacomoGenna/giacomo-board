@@ -163,7 +163,7 @@
     },
     {
       "id": "p-1774724802078",
-      "done": false,
+      "done": true,
       "text": "Mettre dans une séquence ceux qui ont le tag uniquement de l'event",
       "client": "nina",
       "deadline": "2026-04-12",
