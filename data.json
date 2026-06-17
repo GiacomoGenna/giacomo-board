@@ -481,12 +481,6 @@
   ],
   "clients": [
     {
-      "id": "elodie",
-      "name": "Élodie Scullino",
-      "color": "#c084fc",
-      "work": "1 email/semaine. Envoi automatique vendredi à 7h15. Validation requise au plus tard le jeudi. Je rédige et mets l'email dans son logiciel."
-    },
-    {
       "id": "nina",
       "name": "Nina Voit",
       "color": "#fb923c",
