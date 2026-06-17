@@ -261,7 +261,7 @@
       "steps": [
         {
           "text": "Finaliser séquence mail Académie post inscription",
-          "done": false,
+          "done": true,
           "date": "2026-05-03"
         },
         {
