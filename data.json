@@ -525,12 +525,6 @@
     },
     {
       "date": "2026-04-24",
-      "client": "christian",
-      "minutes": 30,
-      "label": "Post LinkedIn JEUDI pour Christian"
-    },
-    {
-      "date": "2026-04-24",
       "client": "sebastien",
       "minutes": 30,
       "label": "Post LinkedIn JEUDI pour Sébastien"
@@ -549,12 +543,6 @@
     },
     {
       "date": "2026-04-24",
-      "client": "christian",
-      "minutes": 30,
-      "label": "Envoyer post LinkedIn JEUDI à Christian"
-    },
-    {
-      "date": "2026-04-24",
       "client": "sebastien",
       "minutes": 15,
       "label": "Envoyer post LinkedIn JEUDI à Sébastien"
@@ -570,12 +558,6 @@
       "client": "nina",
       "minutes": 30,
       "label": "Rédiger & envoyer email Nina (vendredi)"
-    },
-    {
-      "date": "2026-04-24",
-      "client": "christian",
-      "minutes": 30,
-      "label": "Rédiger et envoyer Post LinkedIn LUNDI pour Christian"
     },
     {
       "date": "2026-04-19",
@@ -638,12 +620,6 @@
       "label": "Analyse data funnel académie"
     },
     {
-      "date": "2026-04-28",
-      "client": "christian",
-      "minutes": 30,
-      "label": "Rédiger et envoyer Post LinkedIn LUNDI pour Christian"
-    },
-    {
       "date": "2026-04-29",
       "client": "nina",
       "minutes": 45,
@@ -654,12 +630,6 @@
       "client": "nina",
       "minutes": 30,
       "label": "Post LinkedIn MARDI Nina #1"
-    },
-    {
-      "date": "2026-04-30",
-      "client": "christian",
-      "minutes": 30,
-      "label": "Rédiger et envoyer Post LinkedIn JEUDI pour Christian"
     },
     {
       "date": "2026-04-30",
@@ -672,48 +642,6 @@
       "client": "elodie",
       "minutes": 30,
       "label": "Rédiger l'email de la semaine pour Élodie"
-    },
-    {
-      "date": "2026-04-30",
-      "client": "nina",
-      "minutes": 30,
-      "label": "Rédiger & envoyer email MERCREDI Nina"
-    },
-    {
-      "date": "2026-05-06",
-      "client": "christian",
-      "minutes": 30,
-      "label": "Rédiger et envoyer Post LinkedIn LUNDI pour Christian"
-    },
-    {
-      "date": "2026-05-06",
-      "client": "nina",
-      "minutes": 30,
-      "label": "Rédiger & envoyer email Nina (vendredi)"
-    },
-    {
-      "date": "2026-05-06",
-      "client": "nina",
-      "minutes": 30,
-      "label": "Rédiger & envoyer email SAMEDI Nina - Vidéo YouTube"
-    },
-    {
-      "date": "2026-05-06",
-      "client": "nina",
-      "minutes": 30,
-      "label": "Rédiger & envoyer email LUNDI Nina - Conseil de coach"
-    },
-    {
-      "date": "2026-05-06",
-      "client": "nina",
-      "minutes": 30,
-      "label": "REDIGER Post LinkedIn MARDI Nina #2"
-    },
-    {
-      "date": "2026-05-06",
-      "client": "nina",
-      "minutes": 30,
-      "label": "Post LinkedIn MARDI Nina #1"
     }
   ]
 }
